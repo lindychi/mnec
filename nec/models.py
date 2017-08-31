@@ -9,7 +9,7 @@ class BucketList(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     deadline_date = models.DateTimeField(blank=True, null=True)
     def __str__(self):
-        return self.title
+        return "[" + str(self.author) + "]" + self.title
 
 class MoneyUnit(models.Model):
     author = models.ForeignKey('auth.User')
@@ -18,3 +18,5 @@ class MoneyUnit(models.Model):
     text = models.TextField(null=True)
     balance = models.IntegerField()
     created_date = models.DateTimeField(blank=False, null=False)
+    def __str__(self):
+        return "[" + str(self.author) + "][" + self.category + "]" + self.title
