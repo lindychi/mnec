@@ -1,5 +1,7 @@
-<head>
-  <title>nec</title>
-</head>
-<body>
-</body>
+{% extends 'nec/base.html' %}
+
+{% block content %}
+  {% for bucketlist in bucketlists %}
+    {{ bucketlist.title }}
+  {% endfor %}
+{% endblock %}
