@@ -35,7 +35,7 @@
                                 <img src="{% static 'img/profile.jpg' %}" alt="Volton">
                             </div>
                             <div class="profile-content">
-                                <h3 class="profile-title">Volton</h3>
+                                <h3 class="profile-title">{{ user.get_username }}</h3>
                                 <p class="profile-description">Digital Photographer</p>
                             </div>
                         </div>
@@ -59,12 +59,12 @@
                 <div class="profile-image">
                     <img src="{% static 'img/profile.jpg' %}" alt="Volton">
                 </div>
-                <h3 class="profile-title">Volton</h3>
+                <h3 class="profile-title">{{ user.get_username }}</h3>
                 <p class="profile-description">Digital Photography</p>
             </div> <!-- top-section -->
             <div class="main-navigation">
                 <ul class="navigation">
-                    <li><a href="#top"><i class="fa fa-globe"></i>Welcome</a></li>
+                    <li><a href="{% url 'bank' %}"><i class="fa fa-globe"></i>Money</a></li>
                     <li><a href="#about"><i class="fa fa-pencil"></i>About Me</a></li>
                     <li><a href="#projects"><i class="fa fa-paperclip"></i>My Gallery</a></li>
                     <li><a href="#contact"><i class="fa fa-link"></i>Contact Me</a></li>
@@ -83,6 +83,7 @@
         </div> <!-- .sidebar-menu -->
 
 
+        {% block content %}
         <div class="banner-bg" id="top">
             <div class="banner-overlay"></div>
             <div class="welcome-text">
@@ -106,8 +107,6 @@
                                 <img src="{% static 'img/8.jpg' %}" alt="about me">
                             </div>
                             <p>Volton is free website design from <span class="blue">template</span><span class="green">mo</span>. You can use this template for any purpose. Please tell your friends about it. Thank you. Credit goes to <a rel="nofollow" href="http://unsplash.com" target="_parent">Unsplash</a> for images used in this design. You can <strong>change menu icons</strong> by checking <a rel="nofollow" href="http://fontawesome.info/font-awesome-icon-world-map/" target="_parent">Font Awesome</a> (version 4). Example: <strong>&lt;i class=&quot;fa fa-camera&quot;&gt;&lt;/i&gt;</strong></p>
-                            {% block content %}
-                            {% endblock %}
                             <hr>
                         </div>
                     </div> <!-- #about -->
@@ -232,6 +231,7 @@
 
             </div>
         </div>
+        {% endblock %}
 
         <script src="{% static 'js/vendor/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'js/min/plugins.min.js' %}"></script>
