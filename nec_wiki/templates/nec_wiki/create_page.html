@@ -4,6 +4,6 @@
   </head>
   <body>
     <h1>{{ page_name }}</h1>
-    이 페이지는 존재하지 않습니다. <a href="/wiki/{{ user_name }}/{{ page_name }}/edit">생성하시겠습니까?</a>
+    이 페이지는 존재하지 않습니다. <a href="{% url 'edit_wiki_page' user_name page_name %}">생성하시겠습니까?</a>
   </body>
 </html>

@@ -8,7 +8,7 @@
     <hr/>
     {{ markdown }}
     <hr/>
-    <a href="/wiki/{{ user_name }}/{{ page_name }}/edit/">페이지 수정</a>
-    <a href="/wiki/{{ user_name }}/{{ page_name }}/delete/">페이지 삭제</a>
+    <a href="{% url 'edit_wiki_page' user_name page_name %}">페이지 수정</a>
+    <a href="{% url 'delete_wiki_page' user_name page_name %}">페이지 삭제</a>
   </body>
 </html>

@@ -1,7 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Page
 from django.http import HttpResponseRedirect
 import markdown
+from django.conf import settings
 
 # Create your views here.
 def view_page(request, user_name, page_name):
@@ -45,3 +46,13 @@ def dashboard_page(request, user_name):
         return render(request, 'nec_wiki/dashboard_page.html', {'user_name':user_name, 'page_list':page_list})
     else:
         return redirect(settings.LOGIN_URL)
+
+def create_page(request, user_name):
+    if request.user.is_authenticated and request.user.username == user_name:
+        content = ""
+        return render(request, 'nec_wiki/create_page.html', {'user_name':user_name})
+    else:
+        return redirect(settings.LOGIN_URL)
+
+def delete_page(request, user_name, page_name):
+    return None
