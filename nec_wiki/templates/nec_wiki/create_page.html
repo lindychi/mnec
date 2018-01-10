@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>{{ page_name }}</h1>
-  이 페이지는 존재하지 않습니다. <a href="{% url 'edit_wiki_page' user_name %}">생성하시겠습니까?</a>
+<form method="post" action="{% url 'save_new_wiki_page' user_name %}">
+    {% csrf_token %}
+    제목: <input type="text" name="title"/><br />
+    <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
+    <input type="submit" value="페이지 저장" />
+  </form>
 {% endblock %}

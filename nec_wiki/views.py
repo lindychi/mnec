@@ -34,6 +34,16 @@ def edit_page(request, user_name, page_name):
     else:
         return redirect(settings.LOGIN_URL)
 
+def save_new_page(request, user_name):
+    if request.user.is_authenticated and request.user.username == user_name:
+        content = request.POST["content"]
+        page_name = request.POST["title"]
+        page = Page(owner=request.user, title=page_name, content=content)
+        page.save()
+        return HttpResponseRedirect("/wiki/" + user_name + "/" + page_name + "/")
+    else:
+        return redirect(settings.LOGIN_URL)
+
 def save_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
         content = request.POST["content"]
