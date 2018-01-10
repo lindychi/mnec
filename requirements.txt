@@ -1,3 +1,4 @@
 Django==1.11.4
+Markdown==2.6.11
 pytz==2017.2
 virtualenv==15.1.0
