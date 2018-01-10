@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>{{ user_name }}'s 위키</title>
+  </head>
+  <body>
+    <a href="/wiki/{{ user_name }}/create/">페이지 생성</a></br>
+    <h1>최근 페이지들</h1></br>
+    {% for page in page_list %}
+      <a href="/wiki/{{ user_name }}/{{ page.title }}/">{{ page.title}}</a></br>
+    {% endfor %}
+  </body>
+</html>
