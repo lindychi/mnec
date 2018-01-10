@@ -5,8 +5,6 @@
   <h1>{{ page_name }}</h1>
   {{ content | wikify | safe }}
   <hr/>
-  {{ markdown | wikify | safe }}
-  <hr/>
   <a href="{% url 'edit_wiki_page' user_name page_name %}">페이지 수정</a>
   <a href="{% url 'delete_wiki_page' user_name page_name %}">페이지 삭제</a>
 {% endblock %}
