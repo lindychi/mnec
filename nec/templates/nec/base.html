@@ -83,7 +83,6 @@
         </div> <!-- .sidebar-menu -->
 
 
-        {% block content %}
         <div class="banner-bg" id="top">
             <div class="banner-overlay"></div>
             <div class="welcome-text">
@@ -97,6 +96,7 @@
             <div class="fluid-container">
 
                 <div class="content-wrapper">
+                {% block content %}
 
                     <!-- ABOUT -->
                     <div class="page-section" id="about">
@@ -227,11 +227,10 @@
                         </div>
                     </div>
 
+                {% endblock %}
                 </div>
-
             </div>
         </div>
-        {% endblock %}
 
         <script src="{% static 'js/vendor/jquery-1.10.2.min.js' %}"></script>
         <script src="{% static 'js/min/plugins.min.js' %}"></script>

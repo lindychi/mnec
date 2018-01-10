@@ -1,7 +1,26 @@
 {% extends 'nec/base.html' %}
 
 {% block content %}
-  {% for bucketlist in bucketlists %}
-    {{ bucketlist.title }}
-  {% endfor %}
+<div>
+  TODO List
+  <table>
+    <tr>
+      <th>제목</th>
+      <th>생성 날짜</th>
+      <th>완료 날짜</th>
+    </tr>
+    {% for todolist in todolists %}
+      <td>{{ todolist.title }}</td>
+      <td>{{ todolist.created_date }}</td>
+      <td>
+          {% if not todolist.end_date == todolist.created_date %}
+            {{ todolist.end_date }}
+          {% else %}
+            무기한
+          {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}
