@@ -1,12 +1,9 @@
-<html>
-  <head>
-    <title>{{ user_name }}'s 위키</title>
-  </head>
-  <body>
-    <a href="{% url 'create_wiki_page' user_name %}">페이지 생성</a></br>
-    <h1>최근 페이지들</h1></br>
-    {% for page in page_list %}
-      <a href="{% url 'view_wiki_page' user_name page.title %}">{{ page.title}}</a></br>
-    {% endfor %}
-  </body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+  <a href="{% url 'create_wiki_page' user_name %}">페이지 생성</a></br>
+  <h1>최근 페이지들</h1></br>
+  {% for page in page_list %}
+    <a href="{% url 'view_wiki_page' user_name page.title %}">{{ page.title}}</a></br>
+  {% endfor %}
+{% endblock %}

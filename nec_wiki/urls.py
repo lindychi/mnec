@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^delete/(?P<user_name>[^/]+)/(?P<page_name>[^/]+)/$', views.delete_page, name='delete_wiki_page'),
     url(r'^(?P<user_name>[^/]+)/(?P<page_name>[^/]+)/$', views.view_page, name='view_wiki_page'),
     url(r'^(?P<user_name>[^/]+)/$', views.dashboard_page, name='dashboard_wiki_page'),
+    url(r'^$', views.index_page, name='index_wiki_page')
 ]

@@ -3,8 +3,15 @@ from .models import Page
 from django.http import HttpResponseRedirect
 import markdown
 from django.conf import settings
+from django.urls import reverse
 
 # Create your views here.
+def index_page(request):
+    if request.user.is_authenticated:
+        return redirect(reverse('dashboard_wiki_page', args=(request.user.username,)))
+    else:
+        return redirect(settings.LOGIN_URL)
+
 def view_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
         try:
@@ -49,7 +56,6 @@ def dashboard_page(request, user_name):
 
 def create_page(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
-        content = ""
         return render(request, 'nec_wiki/create_page.html', {'user_name':user_name})
     else:
         return redirect(settings.LOGIN_URL)

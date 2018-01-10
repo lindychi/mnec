@@ -1,13 +1,9 @@
-<html>
-  <head>
-    <title>{{ page_name }} - 수정</title>
-  </head>
-  <body>
-    <h1>수정중 {{ page_name }}</h1>
-    <form method="post" action="{% url 'save_wiki_page' user_name page_name %}">
-      {% csrf_token %}
-      <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
-      <input type="submit" value="페이지 저장" />
-    </form>
-  </body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>수정중 {{ page_name }}</h1>
+  <form method="post" action="{% url 'save_wiki_page' user_name page_name %}">
+    {% csrf_token %}
+    <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
+    <input type="submit" value="페이지 저장" />
+  </form>
