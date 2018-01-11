@@ -23,3 +23,4 @@ class Page(models.Model):
                 self.tags.clear()
             for tag in tag_list:
                 self.tags.add(tag)
+            self.save()
