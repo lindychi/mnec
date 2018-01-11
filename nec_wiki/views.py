@@ -32,6 +32,7 @@ def edit_page(request, user_name, page_name):
             tags = page.tags.all()
         except Page.DoesNotExist:
             content = ""
+            tags = ""
         return render(request, 'nec_wiki/edit_page.html', {'user_name':user_name, 'page_name':page_name, 'content':content, 'tags':tags})
     else:
         return redirect(settings.LOGIN_URL)
