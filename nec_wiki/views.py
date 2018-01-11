@@ -42,9 +42,7 @@ def save_new_page(request, user_name):
         page_name = request.POST["title"]
         page = Page(owner=request.user, title=page_name, content=content)
         page.save()
-
-        if "tags" in request.POST:
-            page.setTags(request.POST["tags"])
+        page.setTags(request.POST["tags"])
         return HttpResponseRedirect("/wiki/" + user_name + "/" + page_name + "/")
     else:
         return redirect(settings.LOGIN_URL)
@@ -58,9 +56,7 @@ def save_page(request, user_name, page_name):
         except Page.DoesNotExist:
             page = Page(owner=request.user, title=page_name, content=content)
         page.save()
-
-        if "tags" in request.POST:
-            page.setTags(request.POST["tags"])
+        page.setTags(request.POST["tags"])
         return HttpResponseRedirect(reverse('view_wiki_page', args=(user_name, page_name,)))
     else:
         return redirect(settings.LOGIN_URL)
