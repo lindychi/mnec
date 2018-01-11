@@ -16,6 +16,7 @@ class Page(models.Model):
         return self.owner.username + " - " + self.title
 
     def setTags(self, tag_string):
+        self.save()
         if tag_string.lstrip().rstrip():
             tag_list = [Tag.objects.get_or_create(name=tag.rstrip().lstrip('#'), owner=self.owner)[0] for tag in tag_string.lstrip(' #').split('#')]
             if self.tags.count() > 0:
