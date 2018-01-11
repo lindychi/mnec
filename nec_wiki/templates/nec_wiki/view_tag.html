@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% load wikilink %}
+
+{% block content %}
+  <h1>{{ tag_name }}</h1>
+  <hr/>
+  <p>Pages: {% for page in pages %} <a href="{% url 'view_wiki_page' user_name page.title %}">{{ page.title }}</a></br> {% endfor %}</p>
+{% endblock %}

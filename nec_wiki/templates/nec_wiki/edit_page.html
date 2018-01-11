@@ -5,6 +5,7 @@
   <form method="post" action="{% url 'save_wiki_page' user_name page_name %}">
     {% csrf_token %}
     <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
+    Tags: <input name="tags" value="{% for tag in tags %} #{{tag.name}} {% endfor %}" maxlength="64" size=60></br>
     <input type="submit" value="페이지 저장" />
   </form>
 {% endblock %}

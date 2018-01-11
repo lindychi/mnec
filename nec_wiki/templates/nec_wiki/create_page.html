@@ -5,6 +5,7 @@
     {% csrf_token %}
     제목: <input type="text" name="title"/><br />
     <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
+    Tags: <input name="tags" value="" maxlength="64" size=60></br>
     <input type="submit" value="페이지 저장" />
   </form>
 {% endblock %}
