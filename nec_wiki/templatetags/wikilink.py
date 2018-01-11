@@ -2,7 +2,7 @@ from django import template
 import re
 
 wikilink = re.compile("\[\[([^\]]+)\]\]")
-wikiurl = re.compile("\[([^|]+)|([^\]]+)\]")
+wikiurl = re.compile("\[([^|]+)\|([^\]]+)\]")
 register = template.Library()
 
 @register.filter
