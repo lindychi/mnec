@@ -15,10 +15,10 @@ def index_page(request):
 def view_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
         try:
-            page = Page.objects.get(title=str(page_name), owner=request.user)
+            page = Page.objects.get(title=page_name, owner=request.user)
             tags = page.tags.all()
         except Page.DoesNotExist:
-            return render(request('nec_wiki/no_page.html', {'user_name':user_name, 'page_name':page_name}))
+            return render(request, 'nec_wiki/no_page.html', {'user_name':user_name, 'page_name':page_name})
         content = page.content
         return render(request, 'nec_wiki/view_page.html', {'user_name':user_name, 'page_name':page_name, 'content':markdown.markdown(content), 'tags':tags})
     else:
