@@ -18,6 +18,7 @@ class Page(models.Model):
     def setTags(self, tag_string):
         if tag_string.lstrip().rstrip():
             tag_list = [Tag.objects.get_or_create(name=tag.rstrip().lstrip('#'), owner=self.owner)[0] for tag in tag_string.lstrip(' #').split('#')]
-            self.tags.clear()
+            if self.tags.count() > 0:
+                self.tags.clear()
             for tag in tag_list:
                 self.tags.add(tag)

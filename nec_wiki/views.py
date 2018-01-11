@@ -38,7 +38,6 @@ def edit_page(request, user_name, page_name):
 
 def save_new_page(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
-        tag_list = []
         content = request.POST["content"]
         page_name = request.POST["title"]
         page = Page(owner=request.user, title=page_name, content=content)
@@ -52,7 +51,6 @@ def save_new_page(request, user_name):
 
 def save_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
-        tag_list = []
         content = request.POST["content"]
         try:
             page = Page.objects.get(title=page_name, owner=request.user)
