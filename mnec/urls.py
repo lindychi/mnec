@@ -19,5 +19,6 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^wiki/', include('nec_wiki.urls')),
+    url(r'^todo/', include('nec_todo.urls')),
     url(r'', include('nec.urls')),
 ]

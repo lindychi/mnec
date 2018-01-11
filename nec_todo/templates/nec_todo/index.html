@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>최근 할 일들</h1></br>
+  {% for todo in todo_list %}
+    <a href="{% url 'view_wiki_todo' user_name todo.title %}">{{ todo.title }}</a></br>
+  {% endfor %}
+{% endblock %}
