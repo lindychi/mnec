@@ -1,26 +1,30 @@
-{% if form.errors %}
-<p>ID나 비밀번호가 일치하지 않습니다.</p>
-{% endif %}
+{% extends 'base.html' %}
 
-{% if user.is_authenticated %}
-<p>Your account doesn't have access to this page. To proceed,
-please login with an account that has access.</p>
-{% else %}
-<p>Please login to see this page.</p>
-{% endif %}
+{% block content %}
+  {% if form.errors %}
+  <p>ID나 비밀번호가 일치하지 않습니다.</p>
+  {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ next }}" />
-  <table>
-    <tr>
-      <td>{{ form.username.label_tag }}</td>
-      <td>{{ form.username }}</td>
-    </tr>
-    <tr>
-      <td>{{ form.password.label_tag }}</td>
-      <td>{{ form.password }}</td>
-    </tr>
-  </table>
-  <button type="submit">로그인</button>
-</form>
+  {% if user.is_authenticated %}
+  <p>Your account doesn't have access to this page. To proceed,
+  please login with an account that has access.</p>
+  {% else %}
+  <p>Please login to see this page.</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <table>
+      <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+      </tr>
+      <tr>
+        <td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td>
+      </tr>
+    </table>
+    <button type="submit">로그인</button>
+  </form>
+{% endblock %}
