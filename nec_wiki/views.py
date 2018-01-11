@@ -43,7 +43,7 @@ def save_new_page(request, user_name):
         page = Page(owner=request.user, title=page_name, content=content)
         page.save()
         page.setTags(request.POST["tags"])
-        return HttpResponseRedirect("/wiki/" + user_name + "/" + page_name + "/")
+        return HttpResponseRedirect(reverse('view_wiki_page', args=(user_name, page_name,)))
     else:
         return redirect(settings.LOGIN_URL)
 
