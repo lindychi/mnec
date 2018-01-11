@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% load wikilink %}
+
+{% block content %}
+  <h1>{{ page_name }}</h1>
+  해당 문서를 찾을 수 없습니다.
+  <a href="{% url 'edit_wiki_page' user_name page_name %}">[새 문서 만들기]</a>
+{% endblock %}
