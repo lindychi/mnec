@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'nec',
     'nec_wiki',
+    'nec_todo',
 ]
 
 MIDDLEWARE = [
