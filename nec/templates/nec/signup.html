@@ -1,0 +1,10 @@
+{%  extends 'nec/base.html' %}
+
+{% block content %}
+  <h2>Sign up</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">회원 가입</button>
+  </form>
+{% endblock %}

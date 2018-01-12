@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.conf import settings
 from .models import *
-from nec_todo.models import Todo
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.urls import reverse
