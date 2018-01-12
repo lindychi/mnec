@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from .models import Todo
 from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.conf import settings
 
 # Create your views here.
 def index_page(request):
