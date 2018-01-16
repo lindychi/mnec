@@ -5,12 +5,14 @@ import markdown
 from django.conf import settings
 from django.urls import reverse
 
+
 # Create your views here.
-def index_page(request):
+def index(request):
     if request.user.is_authenticated:
-        return redirect(reverse('dashboard_wiki_page', args=(request.user.username,)))
+        return redirect(reverse('wiki_dashboard', args=(request.user.username,)))
     else:
         return redirect(settings.LOGIN_URL)
+
 
 def view_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
@@ -23,6 +25,7 @@ def view_page(request, user_name, page_name):
         return render(request, 'nec_wiki/view_page.html', {'user_name':user_name, 'page_name':page_name, 'content':markdown.markdown(content), 'tags':tags})
     else:
         return redirect(settings.LOGIN_URL)
+
 
 def edit_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
@@ -37,6 +40,7 @@ def edit_page(request, user_name, page_name):
     else:
         return redirect(settings.LOGIN_URL)
 
+
 def save_new_page(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
         content = request.POST["content"]
@@ -44,9 +48,10 @@ def save_new_page(request, user_name):
         page = Page(owner=request.user, title=page_name, content=content)
         page.save()
         page.setTags(request.POST["tags"])
-        return HttpResponseRedirect(reverse('view_wiki_page', args=(user_name, page_name,)))
+        return HttpResponseRedirect(reverse('wiki_view_page', args=(user_name, page_name,)))
     else:
         return redirect(settings.LOGIN_URL)
+
 
 def save_page(request, user_name, page_name):
     if request.user.is_authenticated and request.user.username == user_name:
@@ -58,16 +63,18 @@ def save_page(request, user_name, page_name):
             page = Page(owner=request.user, title=page_name, content=content)
         page.save()
         page.setTags(request.POST["tags"])
-        return HttpResponseRedirect(reverse('view_wiki_page', args=(user_name, page_name,)))
+        return HttpResponseRedirect(reverse('wiki_view_page', args=(user_name, page_name,)))
     else:
         return redirect(settings.LOGIN_URL)
 
-def dashboard_page(request, user_name):
+
+def dashboard(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
         page_list = Page.objects.all()
-        return render(request, 'nec_wiki/dashboard_page.html', {'user_name':user_name, 'page_list':page_list})
+        return render(request, 'nec_wiki/dashboard.html', {'user_name':user_name, 'page_list':page_list})
     else:
         return redirect(settings.LOGIN_URL)
+
 
 def create_page(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
@@ -75,8 +82,10 @@ def create_page(request, user_name):
     else:
         return redirect(settings.LOGIN_URL)
 
+
 def delete_page(request, user_name, page_name):
     return None
+
 
 def view_tag(request, user_name, tag_name):
     try:

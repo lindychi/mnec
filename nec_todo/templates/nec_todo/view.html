@@ -1,0 +1,9 @@
+{% extends 'nec_todo/base.html' %}
+
+{% block content %}
+  <h1>{{ todo.title }}</h1>
+  {{ todo.content }}
+  <hr/>
+  <a href="{% url 'todo_edit' user_name todo.title %}">할 일 수정</a>
+  <a href="{% url 'todo_delete' user_name todo.title %}">할 일 삭제</a>
+{% endblock %}

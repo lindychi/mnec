@@ -4,6 +4,7 @@ from django.db import models
 class Todo(models.Model):
     owner = models.ForeignKey('auth.User')
     title = models.CharField(max_length=1024)
+    content = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(blank=True, null=True, auto_now=True)
     def __str__(self):

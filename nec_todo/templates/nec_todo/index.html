@@ -2,7 +2,8 @@
 
 {% block content %}
   <h1>최근 할 일들</h1></br>
+    <a href="{% url 'todo_create' user_name %}">새 할 일 만들기</a>
   {% for todo in todo_list %}
-    <a href="{% url 'view_wiki_todo' user_name todo.title %}">{{ todo.title }}</a></br>
+    <a href="{% url 'todo_view' user_name todo.title %}">{{ todo.title }}</a></br>
   {% endfor %}
 {% endblock %}
