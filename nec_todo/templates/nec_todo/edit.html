@@ -1,0 +1,11 @@
+{% extends 'nec_todo/base.html' %}
+
+{% block content %}
+  <h1>수정중 {{ todo.title }}</h1>
+  <form method="post" action="{% url 'todo_save' request.user.username todo.id %}">
+    {% csrf_token %}
+    <input type="hidden" name="title" value="{{ todo.title }}">
+    <textarea name="content" rows="20" cols="60">{{ todo.content }}</textarea><br />
+    <input type="submit" value="페이지 저장" />
+  </form>
+{% endblock %}
