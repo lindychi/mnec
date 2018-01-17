@@ -1,4 +1,4 @@
-{% extends 'nec/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
   {% if form.errors %}
@@ -8,24 +8,13 @@
   {% if user.is_authenticated %}
   <p>Your account doesn't have access to this page. To proceed,
   please login with an account that has access.</p>
-  {% else %}
-  <p>Please login to see this page.</p>
   {% endif %}
 
   <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
     <input type="hidden" name="next" value="{{ next }}" />
-    <table>
-      <tr>
-        <td>{{ form.username.label_tag }}</td>
-        <td>{{ form.username }}</td>
-      </tr>
-      <tr>
-        <td>{{ form.password.label_tag }}</td>
-        <td>{{ form.password }}</td>
-      </tr>
-    </table>
-    <button type="submit">로그인</button>
+    {% include 'includes/model_form.html' with form=form %}
+    <button type="submit" class="btn btn-primary">로그인</button>
   </form>
-    <a href="{% url 'signup' %}"><button>회원 가입</button></a>
+  <a href="{% url 'signup' %}"><button class="btn btn-primary">회원가입</button></a>
 {% endblock %}

@@ -1,10 +1,10 @@
-{%  extends 'nec/base.html' %}
+{%  extends 'base.html' %}
 
 {% block content %}
-  <h2>Sign up</h2>
+  <h2>회원가입</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">회원 가입</button>
+    {% include 'includes/model_form.html' with form=form %}
+    <button type="submit" class="btn btn-primary">회원가입</button>
   </form>
 {% endblock %}
