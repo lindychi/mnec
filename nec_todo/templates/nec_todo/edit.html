@@ -2,7 +2,7 @@
 {% load widget_tweaks %}
 
 {% block content %}
-    <form method="post" action="{% url 'todo_save' request.user.username todo.id %}" novalidate>
+    <form method="post" action="{% url 'todo_edit' request.user.username todo.id %}" novalidate>
         {% csrf_token %}
         {% include 'includes/model_form.html' with form=todo_form %}
         <button type="submit" class="btn btn-primary">페이지 저장</button>

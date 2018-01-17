@@ -17,34 +17,19 @@ def index(request):
 
 
 def create(request, user_name):
-    if request.user.is_authenticated:
-        return render(request, 'nec_todo/create.html', {'user_name':user_name})
-    else:
-        return redirect(settings.LOGIN_URL)
-
-
-def save_new(request, user_name):
     if request.user.is_authenticated and request.user.username == user_name:
-        content = request.POST["content"]
-        todo_name = request.POST["title"]
-        todo = Todo(owner=request.user, title=todo_name, content=content)
-        todo.save()
-        return HttpResponseRedirect(reverse('todo_index'))
-    else:
-        return redirect(settings.LOGIN_URL)
-
-
-def save(request, user_name, todo_id):
-    if request.user.is_authenticated and request.user.username == user_name:
-        title = request.POST["title"]
-        content = request.POST["content"]
-        try:
-            todo = Todo.objects.get(id=int(todo_id), owner=request.user)
-            todo.content = content
-        except Todo.DoesNotExist:
-            todo = Page(owner=request.user, title=title, content=content)
-        todo.save()
-        return HttpResponseRedirect(reverse('todo_view', args=(user_name, title,)))
+        if request.method == 'POST':
+            form = TodoForm(request.POST, request.FILES)
+            if form.is_valid():
+                todo = form.save(commit=False)
+                todo.owner = request.user
+                todo.save()
+                return redirect(todo)
+            else:
+                return render(request, 'nec_todo/create.html', {'todo_form': form})
+        else:
+            form = TodoForm()
+            return render(request, 'nec_todo/create.html', {'todo_form': form})
     else:
         return redirect(settings.LOGIN_URL)
 
@@ -65,9 +50,12 @@ def edit(request, user_name, todo_id):
             if form.is_valid():
                 todo = form.save()
                 return redirect(todo)
+            else:
+                return render(request, 'nec_todo/edit.html', {'todo': todo, 'todo_form':form})
+
         else:
-            todo_form = TodoForm(instance=todo)
-            return render(request, 'nec_todo/edit.html', {'todo': todo, 'todo_form':todo_form})
+            form = TodoForm(instance=todo)
+            return render(request, 'nec_todo/edit.html', {'todo': todo, 'todo_form':form})
     else:
         return redirect(settings.LOGIN_URL)
 
@@ -80,4 +68,3 @@ def delete(request, user_name, todo_id):
         return redirect(reverse('todo_view', args=(request.user.username, title, )))
     else:
         return redirect(settings.LOGIN_URL)
-    return None

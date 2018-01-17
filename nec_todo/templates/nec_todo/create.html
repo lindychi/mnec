@@ -1,10 +1,9 @@
 {% extends 'nec_todo/base.html' %}
 
 {% block content %}
-<form method="post" action="{% url 'todo_save_new' user_name %}">
+<form method="post" action="{% url 'todo_create' request.user.username %}" novalidate>
     {% csrf_token %}
-    제목: <input type="text" name="title"/><br />
-    <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
-    <input type="submit" value="페이지 저장" />
+    {% include 'includes/model_form.html' with form=todo_form %}
+    <button type="submit" class="btn btn-primary">페이지 저장</button>
   </form>
 {% endblock %}

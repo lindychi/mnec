@@ -2,8 +2,25 @@
 
 {% block content %}
   <h1>최근 할 일들</h1></br>
-    <a href="{% url 'todo_create' user_name %}">새 할 일 만들기</a>
-  {% for todo in todo_list %}
-    <a href="{% url 'todo_view' user_name todo.title %}">{{ todo.title }}</a></br>
-  {% endfor %}
+    <a href="{% url 'todo_create' user_name %}"><button class="btn btn-primary">새 할 일 만들기</button></a></br>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>할 일</th>
+          <th>시작일</th>
+          <th>기한일</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for todo in todo_list %}
+        <tr>
+          <td>
+            <a href="{% url 'todo_view' user_name todo.title %}">{{ todo.title }}</a></br>
+          </td>
+          <td>{{ todo.start_date }}</td>
+          <td>{{ todo.end_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 {% endblock %}
