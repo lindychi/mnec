@@ -3,9 +3,10 @@
 {% block content %}
     {% for todo in todo_list %}
         <h1>{{ todo.title }}</h1>
+        상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중{% endif %}</code></br>
         {{ todo.content }}
         <hr/>
-        <a href="{% url 'todo_edit' user_name todo.id %}">할 일 수정</a>
-        <a href="{% url 'todo_delete' user_name todo.id %}">할 일 삭제</a>
+        <a href="{% url 'todo_edit' user_name todo.id %}"><button class="btn btn-info">할 일 수정</button></a>
+        <a href="{% url 'todo_delete' user_name todo.id %}"><button class="btn btn-danger">할 일 삭제</button></a>
     {% endfor %}
 {% endblock %}

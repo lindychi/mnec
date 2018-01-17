@@ -12,6 +12,7 @@ class Todo(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     daily = models.BooleanField()
+    complete = models.BooleanField()
 
     def __str__(self):
         if self.end_date is self.created_date:
