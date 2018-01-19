@@ -1,7 +1,6 @@
 from django.conf.urls import url
 from . import views
 
-
 urlpatterns = [
     url(r'^$', views.index, name='todo_index'),
     url(r'^create/(?P<user_name>[^/]+)/$', views.create, name='todo_create'),

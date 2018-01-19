@@ -1,11 +1,10 @@
 {% extends 'nec_wiki/base.html' %}
 
 {% block content %}
-<form method="post" action="{% url 'wiki_create_page' user_name %}">
+<form method="post" action="{% url 'wiki_create_page' request.user.username %}">
     {% csrf_token %}
-    제목: <input type="text" name="title"/><br />
-    <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
-    Tags: <input name="tags" value="" maxlength="64" size=60></br>
-    <input type="submit" value="페이지 저장" />
-  </form>
+    {% include 'includes/model_form.html' with form=page_form %}
+    <button type="submit" class="btn btn-primary">페이지 저장</button>
+</form>
+<a href="{% url 'wiki_create_tag' request.user.username %}" target="_blank"><button class="btn btn-secondary">+</button></a>
 {% endblock %}

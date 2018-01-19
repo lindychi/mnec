@@ -1,11 +1,17 @@
 from django.db import models
 import markdown
+from django.urls import reverse
+
 
 class Tag(models.Model):
     name = models.CharField(max_length=64)
     owner = models.ForeignKey('auth.User')
     def __str__(self):
         return self.owner.username + " - " + self.name
+
+    def get_absolute_url(self):
+        return reverse('wiki_view_tag', args=(self.owner.username, self.name, ))
+
 
 class Page(models.Model):
     owner = models.ForeignKey('auth.User')
@@ -24,3 +30,6 @@ class Page(models.Model):
         for tag in tag_list:
             self.tags.add(tag)
         self.save()
+
+    def get_absolute_url(self):
+        return reverse('wiki_view_page', args=(self.owner.username, self.title, ))
