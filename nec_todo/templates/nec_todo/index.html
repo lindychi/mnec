@@ -1,28 +1,5 @@
 {% extends 'nec_todo/base.html' %}
 
 {% block content %}
-  <h1>최근 할 일들</h1></br>
-    <a href="{% url 'todo_create' request.user.username %}"><button class="btn btn-primary">새 할 일 만들기</button></a></br>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>할 일</th>
-          <th>시작일</th>
-          <th>기한일</th>
-          <th>수행</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for todo in todo_list %}
-        <tr>
-          <td>
-            <a href="{% url 'todo_view' request.user.username todo.title %}">{{ todo.title }}</a></br>
-          </td>
-          <td>{{ todo.start_date }}</td>
-          <td>{{ todo.end_date }}</td>
-          <td>{% if todo.daily %}<code class="highlight">daily</code>{% endif %}<a href="{% url 'todo_do' request.user.username todo.id %}"<button class="btn btn-primary btn-sm {% if todo.complete %}disabled{% endif %}">완료</button></a></td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+{{calendar}}
 {% endblock %}

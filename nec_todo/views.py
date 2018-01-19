@@ -6,7 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
-
+import calendar
+import datetime
 
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
@@ -15,10 +16,21 @@ def index(request):
 
     list up all todo with current user
     """
+    c = calendar.HTMLCalendar(firstweekday=6).formatmonth(theyear=2018, themonth=1)
+
+    return render(request, 'nec_todo/index.html',
+                  {'calendar': c})
+
+
+def recent_list(request):
+    """Todo recent list page.
+
+    list up all todo with current user
+    """
     todo_filter = Todo.objects.filter(owner=request.user,
                                       created_date__lte=timezone.now())
     todo_list = todo_filter.order_by('-created_date')
-    return render(request, 'nec_todo/index.html',
+    return render(request, 'nec_todo/recent_list.html',
                   {'todo_list': todo_list, 'user_name': request.user.username})
 
 
@@ -32,8 +44,8 @@ def create(request, user_name):
             todo.owner = request.user
             todo.complete = False
             todo.save()
-        else:
             return redirect(todo)
+        else:
             return render(request, 'nec_todo/create.html', {'todo_form': form})
     else:
         form = TodoForm()
