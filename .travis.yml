@@ -15,10 +15,11 @@ python:
 services: sqlite3
 
 env:
-  - DJANGO=1.11.4 DB=sqlite3
+  - XhyBcB0EmL4o1tk5H1qfZLUWqCLpD4OAloUaO
 
 install:
   - pip install -r requirements.txt
+  - pip install coveralls
 
 script:
   - python manage.py makemigrations
