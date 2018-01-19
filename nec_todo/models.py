@@ -12,6 +12,7 @@ class Todo(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     daily = models.BooleanField()
+    daily_page = models.TextField()
     complete = models.BooleanField()
 
     def __str__(self):
@@ -22,3 +23,4 @@ class Todo(models.Model):
 
     def get_absolute_url(self):
         return reverse('todo_view', args=(self.owner.username, self.title, ))
+        

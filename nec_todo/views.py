@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
+import datetime
 
 
 # Create your views here.
@@ -22,6 +23,7 @@ def create(request, user_name):
         if form.is_valid():
             todo = form.save(commit=False)
             todo.owner = request.user
+            todo.complete = False
             todo.save()
             return redirect(todo)
         else:
@@ -64,10 +66,8 @@ def delete(request, user_name, todo_id):
 def do(request, user_name, todo_id):
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     if todo.daily:
-        new_todo = copy.copy(todo)
-        new_todo.start_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        new_todo.end_date = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        new_todo.complete = True
+        now = datetime.datetime.now()
+        new_todo = Todo(owner=todo.owner, title = todo.title, content = todo.content, start_date = now.strftime('%Y-%m-%d'), end_date = now.strftime('%Y-%m-%d %H:%M:%S'), daily = False, daily_page = todo.daily_page, complete = True)
         new_todo.save()
     else:
         todo.complete = True

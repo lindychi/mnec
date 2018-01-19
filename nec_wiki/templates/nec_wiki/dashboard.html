@@ -1,8 +1,9 @@
 {% extends 'nec_wiki/base.html' %}
 
 {% block content %}
-  <a href="{% url 'wiki_create_page' user_name %}">페이지 생성</a></br>
   <h1>최근 페이지들</h1></br>
+  <a href="{% url 'wiki_create_page' user_name %}"><button class="btn btn-primary">페이지 생성</button></a></br>
+  <h2>최근 페이지</h2>
   {% for page in page_list %}
     <a href="{% url 'wiki_view_page' user_name page.title %}">{{ page.title}}</a></br>
   {% endfor %}

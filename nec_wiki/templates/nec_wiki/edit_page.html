@@ -1,11 +1,10 @@
 {% extends 'nec_wiki/base.html' %}
 
 {% block content %}
-  <h1>수정중 {{ page_name }}</h1>
-  <form method="post" action="{% url 'save_wiki_page' user_name page_name %}">
+  <h1>수정중 {{ page.title }}</h1>
+  <form method="post" action="{% url 'wiki_edit_page' request.user.username page.title %}">
     {% csrf_token %}
-    <textarea name="content" rows="20" cols="60">{{ content }}</textarea><br />
-    Tags: <input name="tags" value="{% for tag in tags %} #{{tag.name}} {% endfor %}" maxlength="64" size=60></br>
+    {% include 'includes/model_form.html' with form=page_form %}
     <input type="submit" value="페이지 저장" />
   </form>
 {% endblock %}

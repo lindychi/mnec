@@ -11,6 +11,7 @@ class Page(models.Model):
     owner = models.ForeignKey('auth.User')
     title = models.CharField(max_length=1024)
     content = models.TextField(blank=True)
+    todo_log = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag)
     def __str__(self):
         return self.owner.username + " - " + self.title

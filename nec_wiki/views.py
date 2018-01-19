@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Page, Tag
 from django.http import HttpResponseRedirect
 import markdown
 from django.conf import settings
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
+from .forms import PageForm, TagForm
+import copy
 
 
 # Create your views here.
@@ -27,18 +30,22 @@ def view_page(request, user_name, page_name):
         return redirect(settings.LOGIN_URL)
 
 
+@login_required(login_url=settings.LOGIN_URL)
 def edit_page(request, user_name, page_name):
-    if request.user.is_authenticated and request.user.username == user_name:
-        try:
-            page = Page.objects.get(title=page_name, owner=request.user)
-            content = page.content
-            tags = page.tags.all()
-        except Page.DoesNotExist:
-            content = ""
-            tags = ""
-        return render(request, 'nec_wiki/edit_page.html', {'user_name':user_name, 'page_name':page_name, 'content':content, 'tags':tags})
+    try:
+        page = Page.objects.get(owner=request.user, title=page_name)
+    except Page.DoesNotExist:
+        return render(request, 'nec_wiki/no_page.html', {'page_name': page_name})
+    if request.method == 'POST':
+        page_form = PageForm(request.POST, request.FILES, instance=page)
+        if form.is_valid():
+            page = form.save()
+            return redirect(page)
+        else:
+            return render(request, 'nec_wiki/edit_page.html', {'page': page, 'page_form': page_form})
     else:
-        return redirect(settings.LOGIN_URL)
+        page_form = PageForm(instance=page)
+        return render(request, 'nec_wiki/edit_page.html', {'page': page, 'page_form': page_form})
 
 
 def save_new_page(request, user_name):

@@ -20,7 +20,7 @@
           </td>
           <td>{{ todo.start_date }}</td>
           <td>{{ todo.end_date }}</td>
-          <td><a href="{% url 'todo_do' request.user.username todo.id %}"<button class="btn btn-primary btn-sm">완료</button></a></td>
+          <td>{% if todo.daily %}<code class="highlight">daily</code>{% endif %}<a href="{% url 'todo_do' request.user.username todo.id %}"<button class="btn btn-primary btn-sm {% if todo.complete %}disabled{% endif %}">완료</button></a></td>
         </tr>
         {% endfor %}
       </tbody>
