@@ -1,36 +1,14 @@
 """For parse calendar html."""
 import re
 import calendar
+from .day import Day
 
-
-class Day:
-    """Unit of calendar.
-
-    control each day data and print result
-    """
-    class_str = ""
-    month = 1
-    day = 1
-    event = []
-
-    def __init__(self, class_str, month, day):
-        self.class_str = class_str
-        self.month = int(month)
-        self.day = int(day)
-        self.event = []
-
-        if self.class_str == "noday":
-            self.day = 0
-
-    def get_day(self):
-        return self.day
-
-    def get_month(self):
-        return self.month
 
 class Calendar:
     """Print calendar html with other classes."""
 
+    year = 0
+    month = 0
     first_day = 0
     token_list = ()
     calendar_array = []
@@ -65,13 +43,72 @@ class Calendar:
 
     def list_to_array(self):
         """Make array from token list."""
-        calendar_array = []
+        self.calendar_array = []
         for token_class, token_value in self.token_list:
-            if token_class is "noday":
-                token_value = ""
+            if token_class == "noday":
+                token_value = "0"
             if token_value is "1":
-                self.first_day = len(calendar_array)
-            calendar_array.append([token_class, token_value, []])
+                self.first_day = len(self.calendar_array) - 1
+            self.calendar_array.append(Day(token_class,
+                                       self.year,
+                                       self.month,
+                                       token_value))
+
+    def add_event(self, start_date, end_date, title, url):
+        start_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
+                                 start_date)[0]
+        end_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
+                               end_date)[0]
+
+        if int(start_token[1]) < self.month:
+            start_token[2] = "1"
+        elif int(start_token[1]) > self.month:
+            return
+
+        if int(end_token[1]) > self.month:
+            end_token[2] = str(calendar.monthrange(self.year, self.month)[1])
+        elif int(end_token[1]) < self.month:
+            return
+
+        available = False
+        index = 0
+        count = 0
+        while not available:
+            for i in range(int(start_token[2]), int(end_token[2]) + 1):
+                if not self.calendar_array[self.first_day + i].is_able(index):
+                    break
+                else:
+                    count = count + 1
+            if count is int(end_token[2]) + 1 - int(start_token[2]):
+                available = True
+            else:
+                count = 0
+                index = index + 1
+
+        for i in range(int(start_token[2]), int(end_token[2]) + 1):
+            if int(start_token[2]) is i:
+                start_time = ":".join(start_token[3:])
+            else:
+                start_time = "00:00:00"
+
+            if int(end_date[2]) + 1 == i:
+                end_time = ":".join(end_token[3:])
+            else:
+                end_time = "23:59:59"
+
+            self.calendar_array[self.first_day + i].add_event(index,
+                                                              start_time,
+                                                              end_time,
+                                                              title,
+                                                              url)
 
     def get_first_day(self):
         return self.first_day
+
+    def get_day(self, index):
+        return self.calendar_array[index + self.first_day]
+
+    def print_calendar(self):
+        """Print calendar for test."""
+        for day in self.calendar_array:
+            day.print_day()
