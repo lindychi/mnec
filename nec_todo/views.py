@@ -49,7 +49,7 @@ def view(request, user_name, todo_name):
     """
     todo_list = Todo.objects.filter(owner=request.user, title=todo_name)
     return render(request, 'nec_todo/view.html',
-                  {'user_name': user_name, 'todo_list': todo_list})
+                  {'todo_list': todo_list})
 
 
 @login_required(login_url=settings.LOGIN_URL)
