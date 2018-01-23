@@ -21,7 +21,7 @@ class Event:
         print(" - " + self.title)
 
     def html_event(self):
-        html = "<span>"
-        html += self.title
-        html += "</span></br>"
+        html =  "<div class=\"calendar_event\">"
+        html += "<code><a href=\"" + self.url + "\">" + self.title + "</a></code>"
+        html += "</div>"
         return html

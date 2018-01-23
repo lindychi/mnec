@@ -1,6 +1,7 @@
 {% extends 'nec_todo/base.html' %}
 
 {% block content %}
+  {% include 'nec_calendar/calendar' }
   <h1>최근 할 일들</h1></br>
     <a href="{% url 'todo_create' request.user.username %}"><button class="btn btn-primary">새 할 일 만들기</button></a></br>
     <table class="table table-striped">

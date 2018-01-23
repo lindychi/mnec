@@ -95,13 +95,13 @@ class Day:
                 print(" - None")
 
     def html_day(self):
-        html = "<td class=\"" + self.class_str + "\">" + self.get_day_str() + "</br>"
+        html = "<div class=\"calendar_day " + self.class_str + "\">" + self.get_day_str() + "</br>"
         for i in range(len(self.event)):
             if self.event[i] is not None:
                 html += self.event[i].html_event()
             else:
-                html += "<span>None</span></br>"
-        html += "</td>\n\n"
+                html += "<div class=\"calendar_event no_event\">None</div>"
+        html += "</div>"
         return html
 
     def get_event(self, index):

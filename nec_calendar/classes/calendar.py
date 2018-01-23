@@ -126,14 +126,26 @@ class Calendar:
 
     def html_calendar(self):
         """Return html format calendar."""
-        html = "<table>\n"
+        html =  "<div class=\"calendar_wrapper\">"
+        html += "  <div class=\"current-month\">" + str(self.year) + "년 " + str(self.month) + "월</div>"
+        html += "  <div class=\"calendar\">"
+        html += "    <div class=\"calendar_header\">"
+        html += "      <div>일</div>"
+        html += "      <div>월</div>"
+        html += "      <div>화</div>"
+        html += "      <div>수</div>"
+        html += "      <div>목</div>"
+        html += "      <div>금</div>"
+        html += "      <div>토</div>"
+        html += "    </div>"
         for i in range(len(self.calendar_array)):
             if i % 7 is 0:
-                html += "<tr>\n"
+                html += "<div class=\"calendar_week\">"
 
             html += self.calendar_array[i].html_day()
 
             if i % 7 is 6:
-                html += "</tr>\n"
-        html += "</table>"
+                html += "</div>"
+        html += "  </div>"
+        html += "</div>"
         return html
