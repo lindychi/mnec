@@ -42,6 +42,12 @@ class Day:
     def get_day(self):
         return self.day
 
+    def get_day_str(self):
+        if self.day is 0:
+            return ""
+        else:
+            return str(self.day)
+
     def get_month(self):
         return self.month
 
@@ -87,6 +93,16 @@ class Day:
                 e.print_event()
             else:
                 print(" - None")
+
+    def html_day(self):
+        html = "<td class=\"" + self.class_str + "\">" + self.get_day_str() + "</br>"
+        for i in range(len(self.event)):
+            if self.event[i] is not None:
+                html += self.event[i].html_event()
+            else:
+                html += "<span>None</span></br>"
+        html += "</td>\n\n"
+        return html
 
     def get_event(self, index):
         if index < len(self.event):

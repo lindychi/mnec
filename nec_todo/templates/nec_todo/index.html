@@ -1,5 +1,12 @@
 {% extends 'nec_todo/base.html' %}
 
 {% block content %}
-{{calendar}}
+  {% include 'nec_calendar/index.html' %}
+  {% for todo in todo_list %}
+    {{ todo.title }}</br>
+  {% endfor %}
+
+  {% for todo in todo_tuple %}
+    {{ todo.0 }} {{ todo.1 }}  {{ todo.2 }} {{ todo.3 }}</br>
+  {% endfor %}
 {% endblock %}

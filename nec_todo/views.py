@@ -6,8 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
-import calendar
-import datetime
+from nec_calendar.classes.calendar import Calendar
+
 
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
@@ -16,10 +16,17 @@ def index(request):
 
     list up all todo with current user
     """
-    c = calendar.HTMLCalendar(firstweekday=6).formatmonth(theyear=2018, themonth=1)
+    c = Calendar(timezone.now().year,
+                 timezone.now().month)
+
+    todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
+    todo_tuple = []
+    for todo in todo_list:
+        todo_tuple.append( (todo.start_date.strftime('%Y-%m-%d %H:%M:%S'), todo.end_date.strftime('%Y-%m-%d %H:%M:%S'), todo.title, "") )
+        c.add_event(todo.start_date.strftime('%Y-%m-%d %H:%M:%S'), todo.end_date.strftime('%Y-%m-%d %H:%M:%S'), todo.title, "")
 
     return render(request, 'nec_todo/index.html',
-                  {'calendar': c})
+                  {'calendar': c, 'todo_list': todo_list, 'todo_tuple': todo_tuple})
 
 
 def recent_list(request):
@@ -39,7 +46,7 @@ def create(request, user_name):
     """Create todo object."""
     if request.method == 'POST':
         form = TodoForm(request.POST, request.FILES)
-        if form.is_valid():
+        if form.is_valid() and form.cleaned_data['end_date'] < form.cleaned_data['start_date']:
             todo = form.save(commit=False)
             todo.owner = request.user
             todo.complete = False

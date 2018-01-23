@@ -14,9 +14,9 @@ class CalendarTest(TestCase):
         c = Calendar(2018, 1)
         self.assertEqual(c.get_size(), 35)
 
-    def test_get_first_day(self):
+    def test_get_first_day_index(self):
         c = Calendar(2018, 1)
-        self.assertEqual(c.get_first_day(), 0)
+        self.assertEqual(c.get_first_day_index(), 0)
 
     def test_dup_date(self):
         c = Calendar(2018, 1)

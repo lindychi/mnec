@@ -1,6 +1,9 @@
 """For parse calendar html."""
 import re
 import calendar
+
+from django.utils import timezone
+
 from .day import Day
 
 
@@ -9,7 +12,8 @@ class Calendar:
 
     year = 0
     month = 0
-    first_day = 0
+    first_day_index = 0
+    last_day = 0
     token_list = ()
     calendar_array = []
 
@@ -22,6 +26,7 @@ class Calendar:
         """
         self.year = year
         self.month = month
+        self.last_day = calendar.monthrange(self.year, self.month)[1]
         calendar_with_6 = calendar.HTMLCalendar(firstweekday=6)
         calendar_set_day = calendar_with_6.formatmonth(theyear=year,
                                                        themonth=month)
@@ -48,7 +53,7 @@ class Calendar:
             if token_class == "noday":
                 token_value = "0"
             if token_value is "1":
-                self.first_day = len(self.calendar_array) - 1
+                self.first_day_index = len(self.calendar_array) - 1
             self.calendar_array.append(Day(token_class,
                                        self.year,
                                        self.month,
@@ -66,7 +71,7 @@ class Calendar:
             return
 
         if int(end_token[1]) > self.month:
-            end_token[2] = str(calendar.monthrange(self.year, self.month)[1])
+            end_token[2] = str(self.last_day)
         elif int(end_token[1]) < self.month:
             return
 
@@ -75,7 +80,7 @@ class Calendar:
         count = 0
         while not available:
             for i in range(int(start_token[2]), int(end_token[2]) + 1):
-                if not self.calendar_array[self.first_day + i].is_able(index):
+                if not self.calendar_array[self.first_day_index + i].is_able(index):
                     break
                 else:
                     count = count + 1
@@ -96,19 +101,39 @@ class Calendar:
             else:
                 end_time = "23:59:59"
 
-            self.calendar_array[self.first_day + i].add_event(index,
-                                                              start_time,
-                                                              end_time,
-                                                              title,
-                                                              url)
+            self.calendar_array[self.first_day_index + i].add_event(index,
+                                                                    start_time,
+                                                                    end_time,
+                                                                    title,
+                                                                    url)
 
-    def get_first_day(self):
-        return self.first_day
+    def get_first_day_index(self):
+        return self.first_day_index
+
+    def get_start_datetime(self):
+        return timezone.datetime(year=self.year, month=self.month, day=1, hour=0, minute=0, second=0)
+
+    def get_end_datetime(self):
+        return timezone.datetime(year=self.year, month=self.month, day=self.last_day, hour=23, minute=59, second=59)
 
     def get_day(self, index):
-        return self.calendar_array[index + self.first_day]
+        return self.calendar_array[index + self.first_day_index]
 
     def print_calendar(self):
         """Print calendar for test."""
         for day in self.calendar_array:
             day.print_day()
+
+    def html_calendar(self):
+        """Return html format calendar."""
+        html = "<table>\n"
+        for i in range(len(self.calendar_array)):
+            if i % 7 is 0:
+                html += "<tr>\n"
+
+            html += self.calendar_array[i].html_day()
+
+            if i % 7 is 6:
+                html += "</tr>\n"
+        html += "</table>"
+        return html
