@@ -7,6 +7,7 @@ from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
 from nec_calendar.classes.calendar import Calendar
 import datetime
+from django.utils import timezone
 
 
 # Create your views here.
@@ -122,5 +123,6 @@ def do(request, user_name, todo_id):
         new_todo.save()
     else:
         todo.complete = True
+        todo.end_date = timezone.datetime.now()
         todo.save()
     return redirect(reverse('todo_index'))
