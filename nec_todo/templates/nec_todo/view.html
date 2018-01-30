@@ -3,13 +3,14 @@
 {% block content %}
     {% for todo in todo_list %}
         <h1>{{ todo.title }}</h1>
-        상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중"{% endif %}</code>{% if not todo.complete %}<a href="{% url 'todo_do' request.user.username todo.id %}"><button class="btn btn-primary btn-sm">완료</button></a>{% endif %}</br>
+        상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중{% endif %}</code>
+        {% if not todo.complete %}<a href="{% url 'todo_do' request.user.username todo.id %}"><button class="btn btn-primary btn-sm">완료</button></a>{% endif %}</br>
         기록 페이지:
         {% if todo.daily_page %}
-        <a href="{% url 'wiki_view_page' request.user.username todo.daily_page %}">{{ todo.daily_page }}</a></br>
+        <a href="{% url 'wiki_view_page' request.user.username todo.daily_page %}">{{ todo.daily_page }}</a>
         {% else %}
         페이지 없음
-        {% endif %}
+        {% endif %}</br>
         {{ todo.content }}
         <hr/>
         <a href="{% url 'todo_edit' request.user.username todo.id %}"><button class="btn btn-info">할 일 수정</button></a>
