@@ -73,3 +73,7 @@ main {
 .calendar_day:last-child {
   border-right: 0;
 }
+
+.calendar_event {
+  background-color: #0074D9;
+}

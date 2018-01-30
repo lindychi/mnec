@@ -59,7 +59,7 @@ class Calendar:
                                        self.month,
                                        token_value))
 
-    def add_event(self, start_date, end_date, title, url):
+    def add_event(self, start_date, end_date, title, url, complete):
         start_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
                                  start_date)[0]
         end_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
@@ -105,7 +105,8 @@ class Calendar:
                                                                     start_time,
                                                                     end_time,
                                                                     title,
-                                                                    url)
+                                                                    url,
+                                                                    complete)
 
     def get_first_day_index(self):
         return self.first_day_index

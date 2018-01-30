@@ -62,7 +62,7 @@ class Day:
         calc_time = time_token_list[0] * 3600 + time_token_list[1] * 60 + time_token_list[2]
         return calc_time
 
-    def add_event(self, index, start_time, end_time, title, url):
+    def add_event(self, index, start_time, end_time, title, url, complete):
         self.start_time = start_time
         self.end_time = end_time
         start_token = re.findall(r'(\d+):(\d+):(\d+)',
@@ -73,7 +73,8 @@ class Day:
         event = Event(self.calc_time_rate(start_token),
                       self.calc_time_rate(end_token),
                       title,
-                      url)
+                      url,
+                      complete)
 
         for i in range(index + 1):
             if i is index:
@@ -100,7 +101,7 @@ class Day:
             if self.event[i] is not None:
                 html += self.event[i].html_event()
             else:
-                html += "<div class=\"calendar_event no_event\">None</div>"
+                html += "<div class=\"calendar_event no_event\"></div>"
         html += "</div>"
         return html
 
