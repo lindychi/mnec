@@ -8,7 +8,7 @@ from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
 from nec_calendar.classes.calendar import Calendar
 from django.utils import timezone
-
+from nec_wiki.models import Page
 
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
@@ -134,6 +134,17 @@ def do(request, user_name, todo_id):
         todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
         todo.end_date = next_day.astimezone().strftime('%Y-%m-%d')
         todo.save()
+
+        if todo.daily_page:
+            try:
+                page = Page.objects.get(owner=request.user, title=todo.daily_page)
+            except Page.DoesNotExist:
+                page = Page(owner=request.user, title=todo.daily_page)
+            log_msg = "%s <a href=\"%s\">%s</a>을 수행함.</br>" % (now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                                                               reverse('todo_view', args=(request.user.username, todo.title,)),
+                                                               todo.title)
+            page.todo_log = log_msg + page.todo_log
+            page.save()
     else:
         todo.complete = True
         todo.end_date = timezone.datetime.now()

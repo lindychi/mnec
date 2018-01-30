@@ -25,7 +25,7 @@ def view_page(request, user_name, page_name):
     content = page.content
     return render(request, 'nec_wiki/view_page.html',
                   {'user_name': user_name, 'page_name': page_name,
-                   'content': markdown.markdown(content), 'tags': tags})
+                   'content': markdown.markdown(content), 'tags': tags, 'page':page})
 
 
 @login_required(login_url=settings.LOGIN_URL)
