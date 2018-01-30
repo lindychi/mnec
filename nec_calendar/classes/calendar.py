@@ -60,17 +60,17 @@ class Calendar:
                                        token_value))
 
     def add_event(self, start_date, end_date, title, url, complete):
-        start_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
-                                 start_date)[0]
-        end_token = re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
-                               end_date)[0]
+        start_token = list(re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
+                                      start_date)[0])
+        end_token = list(re.findall(r'(\d+)-(\d+)-(\d+)\s(\d+):(\d+):(\d+)',
+                                    end_date)[0])
 
         if int(start_token[1]) < self.month:
             start_token[2] = "1"
         elif int(start_token[1]) > self.month:
             return
 
-        if int(end_token[1]) > self.month:
+        if int(end_token[1]) > self.month or start_date == end_date:
             end_token[2] = str(self.last_day)
         elif int(end_token[1]) < self.month:
             return
