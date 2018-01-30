@@ -11,7 +11,7 @@ class Todo(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     daily = models.BooleanField()
-    daily_page = models.TextField()
+    daily_page = models.TextField(blank=True)
     complete = models.BooleanField()
 
     def __str__(self):

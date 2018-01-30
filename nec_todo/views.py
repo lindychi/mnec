@@ -32,8 +32,8 @@ def create(request, user_name):
             todo.owner = request.user
             todo.complete = False
             todo.save()
-        else:
             return redirect(todo)
+        else:
             return render(request, 'nec_todo/create.html', {'todo_form': form})
     else:
         form = TodoForm()
