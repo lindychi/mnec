@@ -127,6 +127,9 @@ def do(request, user_name, todo_id):
         now = timezone.datetime.now()
         new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content, start_date=now.strftime('%Y-%m-%d'), end_date=now.strftime('%Y-%m-%d %H:%M:%S'), daily=False, daily_page=todo.daily_page, complete=True)
         new_todo.save()
+        next_day = now + + timezone.datetime.timedelta(days=1)
+        todo.start_date=next_day.strftime('%Y-%m-%d')
+        todo.save()
     else:
         todo.complete = True
         todo.end_date = timezone.datetime.now()
