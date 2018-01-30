@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'nec',
     'nec_wiki',
     'nec_todo',
+    'nec_calendar',
 ]
 
 MIDDLEWARE = [

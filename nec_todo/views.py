@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
+from nec_calendar.classes.calendar import Calendar
 
 
 # Create your views here.
@@ -15,10 +16,31 @@ def index(request):
 
     list up all todo with current user
     """
+    c = Calendar(timezone.now().year,
+                 timezone.now().month)
+
+    todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
+    todo_tuple = []
+    for todo in todo_list:
+        todo_tuple.append( (todo.start_date.strftime('%Y-%m-%d %H:%M:%S'), todo.end_date.strftime('%Y-%m-%d %H:%M:%S'), todo.title, reverse('todo_view', args=(request.user.username, todo.title, ))) )
+        c.add_event(todo.start_date.strftime('%Y-%m-%d %H:%M:%S'),
+                    todo.end_date.strftime('%Y-%m-%d %H:%M:%S'),
+                    todo.title,
+                    reverse('todo_view', args=(request.user.username, todo.title, )))
+
+    return render(request, 'nec_todo/index.html',
+                  {'calendar': c, 'todo_list': todo_list, 'todo_tuple': todo_tuple})
+
+
+def recent_list(request):
+    """Todo recent list page.
+
+    list up all todo with current user
+    """
     todo_filter = Todo.objects.filter(owner=request.user,
                                       created_date__lte=timezone.now())
     todo_list = todo_filter.order_by('-created_date')
-    return render(request, 'nec_todo/index.html',
+    return render(request, 'nec_todo/recent_list.html',
                   {'todo_list': todo_list, 'user_name': request.user.username})
 
 
@@ -27,7 +49,7 @@ def create(request, user_name):
     """Create todo object."""
     if request.method == 'POST':
         form = TodoForm(request.POST, request.FILES)
-        if form.is_valid():
+        if form.is_valid() and form.cleaned_data['end_date'] < form.cleaned_data['start_date']:
             todo = form.save(commit=False)
             todo.owner = request.user
             todo.complete = False
