@@ -12,7 +12,7 @@
         {% endif %}
         {{ todo.content }}
         <hr/>
-        <a href="{% url 'todo_edit' user_name todo.id %}"><button class="btn btn-info">할 일 수정</button></a>
-        <a href="{% url 'todo_delete' user_name todo.id %}"><button class="btn btn-danger">할 일 삭제</button></a>
+        <a href="{% url 'todo_edit' request.user.username todo.id %}"><button class="btn btn-info">할 일 수정</button></a>
+        <a href="{% url 'todo_delete' request.user.username todo.id %}"><button class="btn btn-danger">할 일 삭제</button></a>
     {% endfor %}
 {% endblock %}
