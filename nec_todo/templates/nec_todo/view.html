@@ -3,7 +3,7 @@
 {% block content %}
     {% for todo in todo_list %}
         <h1>{{ todo.title }}</h1>
-        상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중{% endif %}</code></br>
+        상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중<a href="{% url 'todo_do' request.user.username todo.id %}"><button class="btn btn-primary btn-sm">완료</button></a>"{% endif %}</code></br>
         기록 페이지:
         {% if todo.daily_page %}
         <a href="{% url 'wiki_view_page' request.user.username todo.daily_page %}">{{ todo.daily_page }}</a></br>
