@@ -124,11 +124,15 @@ def do(request, user_name, todo_id):
     """
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     if todo.daily:
-        now = timezone.datetime.now()
-        new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content, start_date=now.strftime('%Y-%m-%d'), end_date=now.strftime('%Y-%m-%d %H:%M:%S'), daily=False, daily_page=todo.daily_page, complete=True)
+        now = timezone.now()
+        new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content,
+                        start_date=now.astimezone().strftime('%Y-%m-%d'),
+                        end_date=now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                        daily=False, daily_page=todo.daily_page, complete=True)
         new_todo.save()
-        next_day = now + timezone.datetime.timedelta(days=1)
-        todo.start_date=next_day.strftime('%Y-%m-%d')
+        next_day = now + timezone.timedelta(days=1)
+        todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
+        todo.end_date = next_day.astimezone().strftime('%Y-%m-%d')
         todo.save()
     else:
         todo.complete = True
