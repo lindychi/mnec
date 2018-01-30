@@ -1,7 +1,7 @@
 {% extends 'nec_todo/base.html' %}
 
 {% block content %}
-<form method="post" action="{% url 'todo_create' request.user.username %}" novalidate>
+<form method="post" action="{% url 'todo_create' %}">
     {% csrf_token %}
     {% include 'includes/model_form.html' with form=todo_form %}
     <button type="submit" class="btn btn-primary">페이지 저장</button>

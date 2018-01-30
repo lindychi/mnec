@@ -10,7 +10,7 @@ class BucketList(models.Model):
     author = models.ForeignKey('auth.User')
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)
-    created_date = models.DateTimeField(default=timezone.now)
+    created_date = models.DateTimeField()
     deadline_date = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):

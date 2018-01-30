@@ -5,6 +5,9 @@
 
 
 /* WRAPPER */
+a {
+  text-decoration:none !important;
+}
 
 .calendar_wrapper {
   display: grid;
@@ -41,7 +44,7 @@
 }
 
 .calendar_day {
-  padding: 16px;
+  /*padding: 16px;*/
 }
 
 body {
@@ -70,10 +73,39 @@ main {
   border-top: 1px solid #e1e1e1;
 }
 
+.calendar_today {
+  background-color: #fcf8e3;
+}
+
 .calendar_day:last-child {
   border-right: 0;
 }
 
 .calendar_event {
-  background-color: #0074D9;
+  background-color: #ce8483;
+  color: #a6e1ec;
+  margin-top: 0.5rem;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.completed_event {
+  background-color: #c1e2b3;
+}
+
+.none_event {
+  background-color: #ffffff;
+}
+
+.calendar_day_button {
+  background-color: #AAAAAA;
+  padding: 1rem;
+  width: 4rem;
+  border-radius: 2rem;
+  text-align: center;
+  color: black;
+  margin: 2rem;
+}
+
+.calendar_day_button:hover {
 }

@@ -1,6 +1,8 @@
 import calendar
 import re
 from .event import Event
+from django.urls import reverse
+import datetime
 
 
 class Day:
@@ -18,6 +20,7 @@ class Day:
 
     def __init__(self, class_str, year, month, day):
         self.class_str = class_str
+        self.year = int(year)
         self.month = int(month)
         self.day = int(day)
         self.event = []
@@ -95,13 +98,31 @@ class Day:
             else:
                 print(" - None")
 
+    def is_today(self):
+        today = datetime.datetime.today()
+        if today.year == self.year and today.month == self.month and today.day == self.day:
+            return True
+        else:
+            return False
+
     def html_day(self):
-        html = "<div class=\"calendar_day " + self.class_str + "\">" + self.get_day_str() + "</br>"
+        html = "<div class=\"calendar_day"
+        if self.is_today():
+            html += " calendar_today"
+        html += " " + self.class_str
+        html += "\">"
+        if self.get_day_str():
+            html += "<div class=\"calendar_day_button\">"
+            html += "<a href=\"%s?start_date=%s&end_date=%s\">%s</a>" % (reverse('todo_create', args=()),
+                                                                         self.get_start_datetime(),
+                                                                         self.get_end_datetime(),
+                                                                         self.get_day_str())
+            html += "</div>"
         for i in range(len(self.event)):
             if self.event[i] is not None:
                 html += self.event[i].html_event()
             else:
-                html += "<div class=\"calendar_event no_event\"></div>"
+                html += "<div class=\"calendar_event none_event\">　</div>"
         html += "</div>"
         return html
 
@@ -110,3 +131,9 @@ class Day:
             return self.event[index]
         else:
             return None
+
+    def get_start_datetime(self):
+        return "%4d-%02d-%02d 00:00:00" % (self.year, self.month, self.day)
+
+    def get_end_datetime(self):
+        return "%4d-%02d-%02d 23:59:59" % (self.year, self.month, self.day)

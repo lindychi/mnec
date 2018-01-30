@@ -1,12 +1,12 @@
 """using url in function."""
 from django.urls import reverse
 from .models import Todo
-from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
 from nec_calendar.classes.calendar import Calendar
+import datetime
 
 
 # Create your views here.
@@ -16,8 +16,8 @@ def index(request):
 
     list up all todo with current user
     """
-    c = Calendar(timezone.now().year,
-                 timezone.now().month)
+    c = Calendar(datetime.datetime.now().year,
+                 datetime.datetime.now().month)
 
     todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
     todo_tuple = []
@@ -26,7 +26,8 @@ def index(request):
         c.add_event(todo.start_date.strftime('%Y-%m-%d %H:%M:%S'),
                     todo.end_date.strftime('%Y-%m-%d %H:%M:%S'),
                     todo.title,
-                    reverse('todo_view', args=(request.user.username, todo.title, )))
+                    reverse('todo_view', args=(request.user.username, todo.title, )),
+                    todo.complete)
 
     return render(request, 'nec_todo/index.html',
                   {'calendar': c, 'todo_list': todo_list, 'todo_tuple': todo_tuple})
@@ -38,18 +39,18 @@ def recent_list(request):
     list up all todo with current user
     """
     todo_filter = Todo.objects.filter(owner=request.user,
-                                      created_date__lte=timezone.now())
+                                      created_date__lte=datetime.datetime.now())
     todo_list = todo_filter.order_by('-created_date')
     return render(request, 'nec_todo/recent_list.html',
                   {'todo_list': todo_list, 'user_name': request.user.username})
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def create(request, user_name):
+def create(request):
     """Create todo object."""
     if request.method == 'POST':
         form = TodoForm(request.POST, request.FILES)
-        if form.is_valid() and form.cleaned_data['end_date'] < form.cleaned_data['start_date']:
+        if form.is_valid():
             todo = form.save(commit=False)
             todo.owner = request.user
             todo.complete = False
@@ -58,7 +59,7 @@ def create(request, user_name):
         else:
             return render(request, 'nec_todo/create.html', {'todo_form': form})
     else:
-        form = TodoForm()
+        form = TodoForm(request.GET)
         return render(request, 'nec_todo/create.html', {'todo_form': form})
 
 
@@ -118,7 +119,7 @@ def do(request, user_name, todo_id):
     """
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     if todo.daily:
-        now = timezone.now()
+        now = datetime.datetime.now()
         new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content, start_date=now.strftime('%Y-%m-%d'), end_date=now.strftime('%Y-%m-%d %H:%M:%S'), daily=False, daily_page=todo.daily_page, complete=True)
         new_todo.save()
     else:
