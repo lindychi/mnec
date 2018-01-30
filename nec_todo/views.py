@@ -6,7 +6,6 @@ from django.conf import settings
 from .forms import TodoForm
 from django.contrib.auth.decorators import login_required
 from nec_calendar.classes.calendar import Calendar
-import datetime
 from django.utils import timezone
 
 
@@ -17,10 +16,17 @@ def index(request):
 
     list up all todo with current user
     """
-    c = Calendar(datetime.datetime.now().year,
-                 datetime.datetime.now().month)
+    return calendar(request, timezone.datetime.now().year, timezone.datetime.now().month)
 
-    todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
+
+@login_required(login_url=settings.LOGIN_URL)
+def calendar(request, year, month):
+    c = Calendar(year, month)
+    c.set_url('todo_calendar')
+
+    todo_list = Todo.objects.filter(owner=request.user,
+                                    end_date__gte=c.get_start_datetime(),
+                                    start_date__lte=c.get_end_datetime())
     for todo in todo_list:
         c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
@@ -28,8 +34,7 @@ def index(request):
                     reverse('todo_view', args=(request.user.username, todo.title, )),
                     todo.complete)
 
-    return render(request, 'nec_todo/index.html',
-                  {'calendar': c, 'todo_list': todo_list})
+    return render(request, 'nec_todo/calendar.html', {'calendar': c, 'todo_list': todo_list})
 
 
 def recent_list(request):
@@ -38,7 +43,7 @@ def recent_list(request):
     list up all todo with current user
     """
     todo_filter = Todo.objects.filter(owner=request.user,
-                                      created_date__lte=datetime.datetime.now())
+                                      created_date__lte=timezone.datetime.now())
     todo_list = todo_filter.order_by('-created_date')
     return render(request, 'nec_todo/recent_list.html',
                   {'todo_list': todo_list, 'user_name': request.user.username})
@@ -118,7 +123,7 @@ def do(request, user_name, todo_id):
     """
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     if todo.daily:
-        now = datetime.datetime.now()
+        now = timezone.datetime.now()
         new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content, start_date=now.strftime('%Y-%m-%d'), end_date=now.strftime('%Y-%m-%d %H:%M:%S'), daily=False, daily_page=todo.daily_page, complete=True)
         new_todo.save()
     else:

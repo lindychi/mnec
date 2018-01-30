@@ -1,8 +1,0 @@
-{% extends 'nec_todo/base.html' %}
-
-{% block content %}
-  {% include 'nec_calendar/index.html' %}
-  {% for todo in todo_list %}
-    {{ todo.title }} {{ todo.start_date }} {{ todo.end_date }} {{ todo.start_date.astimezone }} {{ todo.end_date.astimezone }}</br>
-  {% endfor %}
-{% endblock %}

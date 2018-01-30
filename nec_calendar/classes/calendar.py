@@ -2,6 +2,7 @@
 import re
 import calendar
 
+from django.urls import reverse
 from django.utils import timezone
 
 from .day import Day
@@ -16,6 +17,7 @@ class Calendar:
     last_day = 0
     token_list = ()
     calendar_array = []
+    url_target = ""
 
     def __init__(self, year, month):
         """Parse html and Build Array.
@@ -24,12 +26,12 @@ class Calendar:
 
         After parsing the html, it arranges the data and stores the size.
         """
-        self.year = year
-        self.month = month
+        self.year = int(year)
+        self.month = int(month)
         self.last_day = calendar.monthrange(self.year, self.month)[1]
         calendar_with_6 = calendar.HTMLCalendar(firstweekday=6)
-        calendar_set_day = calendar_with_6.formatmonth(theyear=year,
-                                                       themonth=month)
+        calendar_set_day = calendar_with_6.formatmonth(theyear=self.year,
+                                                       themonth=self.month)
 
         raw_html_table = re.compile(r"""<td\sclass="
                                     ([^\"]+)         #class name
@@ -43,8 +45,8 @@ class Calendar:
         """Return Array size."""
         return len(self.token_list)
 
-    def set_event(self, start_date, end_date, title, url):
-        return True
+    def set_url(self, url):
+        self.url_target = url
 
     def list_to_array(self):
         """Make array from token list."""
@@ -125,10 +127,33 @@ class Calendar:
         for day in self.calendar_array:
             day.print_day()
 
+    def get_prev_month(self):
+        if self.month - 1 == 0:
+            prev_month = 12
+            prev_year = self.year - 1
+        else:
+            prev_month = self.month - 1
+            prev_year = self.year
+        return prev_year, prev_month
+
+    def get_next_month(self):
+        if self.month + 1 == 13:
+            next_month = 1
+            next_year = self.year + 1
+        else:
+            next_month = self.month + 1
+            next_year = self.year
+        return next_year, next_month
+
+    def get_url(self, year_month):
+        return reverse(self.url_target, args=(year_month[0], year_month[1], ))
+
     def html_calendar(self):
         """Return html format calendar."""
         html =  "<div class=\"calendar_wrapper\">"
+        html += "  <div class=\"change_month prev-month\"><a href=\"" + self.get_url(self.get_prev_month()) + "\"><</a></div>"
         html += "  <div class=\"current-month\">" + str(self.year) + "년 " + str(self.month) + "월</div>"
+        html += "  <div class=\"change_month next-month\"><a href=\"" + self.get_url(self.get_next_month()) + "\">></a></div>"
         html += "  <div class=\"calendar\">"
         html += "    <div class=\"calendar_header\">"
         html += "      <div>일</div>"

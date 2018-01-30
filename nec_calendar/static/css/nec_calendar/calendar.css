@@ -47,6 +47,16 @@ a {
   /*padding: 16px;*/
 }
 
+.change_month {
+  padding: 2rem;
+  border-radius: 2rem;
+  width: 8rem;
+  background-color: #282e35;
+  text-align: center;
+  font-size: 40px;
+  color: black;
+}
+
 body {
   font-family: Montserrat;
   font-weight: 100;
@@ -109,3 +119,5 @@ main {
 
 .calendar_day_button:hover {
 }
+
+
