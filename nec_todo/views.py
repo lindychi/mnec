@@ -22,9 +22,8 @@ def index(request):
     todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
     todo_tuple = []
     for todo in todo_list:
-        todo_tuple.append( (todo.start_date.strftime('%Y-%m-%d %H:%M:%S'), todo.end_date.strftime('%Y-%m-%d %H:%M:%S'), todo.title, reverse('todo_view', args=(request.user.username, todo.title, ))) )
-        c.add_event(todo.start_date.strftime('%Y-%m-%d %H:%M:%S'),
-                    todo.end_date.strftime('%Y-%m-%d %H:%M:%S'),
+        c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                    todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.title,
                     reverse('todo_view', args=(request.user.username, todo.title, )),
                     todo.complete)
