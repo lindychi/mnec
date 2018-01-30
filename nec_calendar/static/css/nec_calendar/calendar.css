@@ -13,7 +13,6 @@
   grid-template-areas: "sidebar"
                        "content";
   width: 80vw; /* unnecessary, but let's keep things consistent */
-  height: 100vh;
 }
 
 @media screen and (min-width: 850px) {
@@ -32,7 +31,6 @@
   grid-template-columns: repeat(7, 1fr);
 }
 .calendar_week {
-  grid-auto-rows: 100px;
   text-align: right;
 }
 
