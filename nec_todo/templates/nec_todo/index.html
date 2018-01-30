@@ -3,10 +3,6 @@
 {% block content %}
   {% include 'nec_calendar/index.html' %}
   {% for todo in todo_list %}
-    {{ todo.title }}</br>
-  {% endfor %}
-
-  {% for todo in todo_tuple %}
-    {{ todo.0 }} {{ todo.1 }}  {{ todo.2 }} {{ todo.3 }}</br>
+    {{ todo.title }} {{ todo.start_date }} {{ todo.end_date }} {{ todo.start_date.astimezone }} {{ todo.end_date.astimezone }}</br>
   {% endfor %}
 {% endblock %}

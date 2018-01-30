@@ -20,7 +20,6 @@ def index(request):
                  datetime.datetime.now().month)
 
     todo_list = Todo.objects.filter(owner=request.user, end_date__gte=c.get_start_datetime(), start_date__lte=c.get_end_datetime())
-    todo_tuple = []
     for todo in todo_list:
         c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
@@ -29,7 +28,7 @@ def index(request):
                     todo.complete)
 
     return render(request, 'nec_todo/index.html',
-                  {'calendar': c, 'todo_list': todo_list, 'todo_tuple': todo_tuple})
+                  {'calendar': c, 'todo_list': todo_list})
 
 
 def recent_list(request):
