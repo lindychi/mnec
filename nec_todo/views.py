@@ -69,7 +69,7 @@ def create(request):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def view(request, user_name, todo_name):
+def view(request, todo_name):
     """View todo objects.
 
     Search todo objects with request.user, todo_name
