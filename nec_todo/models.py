@@ -1,3 +1,4 @@
+import markdown
 from django.db import models
 from django.urls import reverse
 
@@ -28,3 +29,6 @@ class Todo(models.Model):
 
     def get_event_tuple(self):
         return [self.start_date]
+
+    def get_markdown_content(self):
+        return markdown.markdown(self.content)

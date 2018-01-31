@@ -1,4 +1,5 @@
 {% extends 'nec_todo/base.html' %}
+{% load wikilink %}
 
 {% block content %}
     {% for todo in todo_list %}
@@ -11,7 +12,7 @@
         {% else %}
         페이지 없음
         {% endif %}</br>
-        {{ todo.content }}
+        {{ todo.get_markdown_content | wikify | safe }}
         <hr/>
         <a href="{% url 'todo_edit' request.user.username todo.id %}"><button class="btn btn-info">할 일 수정</button></a>
         <a href="{% url 'todo_delete' request.user.username todo.id %}"><button class="btn btn-danger">할 일 삭제</button></a>
