@@ -32,7 +32,7 @@ def calendar(request, year, month):
         c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.title,
-                    reverse('todo_view', args=(request.user.username, todo.title, )),
+                    reverse('todo_view', args=(todo.title, )),
                     todo.complete)
 
     return render(request, 'nec_todo/calendar.html', {'calendar': c, 'todo_list': todo_list})
