@@ -9,6 +9,6 @@ register = template.Library()
 @register.filter
 def wikify(value):
     """Substitute the wiki syntax."""
-    value = wikilink.sub(r"<a href='/wiki/hanchi/\1/'>\1</a>", value)
+    value = wikilink.sub(r"<a href='/wiki/page/\1/'>\1</a>", value)
     value = wikiurl.sub(r"<a href='\2'>\1</a>", value)
     return value

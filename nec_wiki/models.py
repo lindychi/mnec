@@ -33,3 +33,6 @@ class Page(models.Model):
 
     def get_absolute_url(self):
         return reverse('wiki_view_page', args=(self.owner.username, self.title, ))
+
+    def get_markdown_content(self):
+        return markdown.markdown(self.content)

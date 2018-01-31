@@ -15,7 +15,20 @@ def index(request):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def view_page(request, user_name, page_name):
+def view_page(request, page_name):
+    try:
+        page = Page.objects.get(title=page_name, owner=request.user)
+        tags = page.tags.all()
+    except Page.DoesNotExist:
+        return render(request, 'nec_wiki/no_page.html',
+                      {'page_name': page_name})
+    content = page.content
+    return render(request, 'nec_wiki/view_page.html',
+                  {'content': markdown.markdown(content), 'page':page})
+
+
+@login_required(login_url=settings.LOGIN_URL)
+def view_other_page(request, user_name, page_name):
     try:
         page = Page.objects.get(title=page_name, owner=request.user)
         tags = page.tags.all()
@@ -26,7 +39,6 @@ def view_page(request, user_name, page_name):
     return render(request, 'nec_wiki/view_page.html',
                   {'user_name': user_name, 'page_name': page_name,
                    'content': markdown.markdown(content), 'tags': tags, 'page':page})
-
 
 @login_required(login_url=settings.LOGIN_URL)
 def edit_page(request, user_name, page_name):
