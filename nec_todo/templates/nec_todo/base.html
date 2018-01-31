@@ -1,3 +1,8 @@
 {% extends 'base.html' %}
 
-{%  block todo_active %}class="active"{% endblock %}
+{%  block todo_active %}green lighten-5{% endblock %}
+
+{% block todo_inner %}
+    <li class="collection-item">목록</li>
+    <li class="collection-item">달력</li>
+{% endblock %}
