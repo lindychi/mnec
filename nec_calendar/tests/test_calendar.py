@@ -21,15 +21,15 @@ class CalendarTest(TestCase):
     def test_dup_date(self):
         c = Calendar(2018, 1)
         c.add_event('2018-1-10 01:00:00', '2018-1-11 00:00:00',
-                    'first', '/wiki/first')
+                    'first', '/wiki/first', False)
         c.add_event('2018-1-8 00:00:00', '2018-1-13 00:00:00',
-                    'second', '/wiki/second')
+                    'second', '/wiki/second', False)
         c.add_event('2018-1-6 00:00:00', '2018-1-11 00:00:00',
-                    'third', '/wiki/third')
+                    'third', '/wiki/third', False)
         c.add_event('2018-1-11 00:00:00', '2018-1-15 00:00:00',
-                    'fourth', '/wiki/fourth')
+                    'fourth', '/wiki/fourth', False)
         c.add_event('2019-1-13 00:00:00', '2018-1-16 00:00:00',
-                    'fifth', '/wiki/fifth')
+                    'fifth', '/wiki/fifth', False)
 
         self.assertEqual(c.get_day(6).get_event(0), None)
         self.assertEqual(c.get_day(6).get_event(1), None)
