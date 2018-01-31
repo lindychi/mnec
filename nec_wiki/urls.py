@@ -17,6 +17,5 @@ urlpatterns = [
     # url(r'^tag/delete/(?P<user_name>[^/]+)/(?P<tag_name>.+)/$', views.delete_tag, name='wiki_delete_tag'),
     url(r'^tag/create/(?P<user_name>[^/]+)/$', views.create_tag, name='wiki_create_tag'),
     url(r'^tag/(?P<user_name>[^/]+)/(?P<tag_name>.+)/$', views.view_tag, name='wiki_view_tag'),
-    url(r'^(?P<user_name>[^/]+)/$', views.dashboard, name='wiki_dashboard'),
     url(r'^$', views.index, name='wiki_index')
 ]

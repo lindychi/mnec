@@ -7,11 +7,10 @@ from django.contrib.auth.decorators import login_required
 from .forms import PageForm, TagForm
 
 
-# Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
 def index(request):
-    """Wiki index page function."""
-    return redirect(reverse('wiki_dashboard', args=(request.user.username,)))
+    page_list = Page.objects.all()
+    return render(request, 'nec_wiki/dashboard.html', {'page_list': page_list})
 
 
 @login_required(login_url=settings.LOGIN_URL)
@@ -67,13 +66,6 @@ def edit_page(request, user_name, page_name):
         page_form = PageForm(instance=page)
         return render(request, 'nec_wiki/edit_page.html',
                       {'page': page, 'page_form': page_form})
-
-
-@login_required(login_url=settings.LOGIN_URL)
-def dashboard(request, user_name):
-    page_list = Page.objects.all()
-    return render(request, 'nec_wiki/dashboard.html', {'user_name': user_name,
-                                                       'page_list': page_list})
 
 
 @login_required(login_url=settings.LOGIN_URL)

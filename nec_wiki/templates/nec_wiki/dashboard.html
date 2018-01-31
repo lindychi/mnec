@@ -2,9 +2,9 @@
 
 {% block content %}
   <h1>최근 페이지들</h1></br>
-  <a href="{% url 'wiki_create_page' user_name %}"><button class="btn btn-primary">페이지 생성</button></a></br>
+  <a href="{% url 'wiki_create_page' request.user.username %}"><button class="btn btn-primary">페이지 생성</button></a></br>
   <h2>최근 페이지</h2>
   {% for page in page_list %}
-    <a href="{% url 'wiki_view_page' user_name page.title %}">{{ page.title}}</a></br>
+    <a href="{% url 'wiki_view_page' page.title %}">{{ page.title }}</a></br>
   {% endfor %}
 {% endblock %}
