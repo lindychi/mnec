@@ -10,6 +10,7 @@ from nec_calendar.classes.calendar import Calendar
 from django.utils import timezone
 from nec_wiki.models import Page
 
+
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
 def index(request):

@@ -25,7 +25,7 @@ class Todo(models.Model):
                                    self.title)
 
     def get_absolute_url(self):
-        return reverse('todo_view', args=(self.owner.username, self.title, ))
+        return reverse('todo_view', args=(self.title, ))
 
     def get_event_tuple(self):
         return [self.start_date]
