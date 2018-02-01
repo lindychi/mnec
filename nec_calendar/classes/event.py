@@ -25,7 +25,7 @@ class Event:
     def html_event(self):
         html =  "<div class=\"calendar_event btn truncate left"
         if self.complete:
-            html += " completed_event red darken-4"
+            html += " completed_event"
         html += "\">"
         html += "<a href=\"" + self.url + "\">" + self.title + "</a>"
         html += "</div>"

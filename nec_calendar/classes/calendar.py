@@ -153,9 +153,9 @@ class Calendar:
     def html_calendar(self):
         """Return html format calendar."""
         html = "<div class=\"calendar_wrapper\">"
-        html += " <div class=\"center\">"
+        html += " <div class=\"center calendar_top_bar\">"
         html += "  <span><a href=\"" + self.get_url(self.get_prev_month()) + "\"><i class=\"material-icons\">chevron_left</i></a></span>"
-        html += "  <span class=\"calendar_year_month_str\">" + str(self.year) + "년 " + str(self.month) + "월</span>"
+        html += "  <span class=\"calendar_year_month_str\"><b>" + str(self.year) + "년 " + str(self.month) + "월</b></span>"
         html += "  <span><a href=\"" + self.get_url(self.get_next_month()) + "\"><i class=\"material-icons\">chevron_right</i></a></span>"
         html += " </div>"
         html += "  <div class=\"calendar\">"

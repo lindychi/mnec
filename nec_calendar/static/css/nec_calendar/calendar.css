@@ -28,13 +28,22 @@ a {
 
 .calendar{}
 
+.calendar_year_month_str {
+  font-size: 20px;
+}
+
+.calendar_top_bar {
+  padding-top: 20px;
+  align-items: center;
+}
+
 .calendar_week,
 .calendar_header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
 }
 .calendar_week {
-  text-align: right;
+  border-bottom: 1px solid #e1e1e1;
 }
 
 .calendar_header {
@@ -57,19 +66,11 @@ a {
   color: black;
 }
 
-body {
-  font-family: Montserrat;
-  font-weight: 100;
-  color: #A8B2B9;
-}
-
-main {
-  background-color: #FCFBFC;
-}
-
 .calendar {
   background-color: white;
-  border: 1px solid #e1e1e1;
+  border-top: 1px solid #e1e1e1;
+  border-left: 1px solid #e1e1e1;
+  border-right: 1px solid #e1e1e1;
 }
 
 .calendar_header > div {
@@ -79,8 +80,8 @@ main {
 }
 
 .calendar_day {
-  border-right: 1px solid #e1e1e1;
-  border-top: 1px solid #e1e1e1;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .calendar_today {
@@ -92,12 +93,16 @@ main {
 }
 
 .calendar_event {
-  background-color: #ce8483;
   color: #a6e1ec;
   margin-top: 0.5rem;
   text-align: left;
   padding: 0.5rem;
   width: 100%;
+  background-color: #e57373;
+}
+
+.calendar_event:hover {
+  background-color: #ffcdd2;
 }
 
 .completed_event {
@@ -106,19 +111,5 @@ main {
 
 .none_event {
   background-color: #ffffff;
+  pointer-events: none;
 }
-
-.calendar_day_button {
-  background-color: #AAAAAA;
-  padding: 1rem;
-  width: 4rem;
-  border-radius: 2rem;
-  text-align: center;
-  color: black;
-  margin: 2rem;
-}
-
-.calendar_day_button:hover {
-}
-
-

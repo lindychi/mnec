@@ -111,19 +111,17 @@ class Day:
             html += " calendar_today"
         html += " " + self.class_str
         html += "\">"
-        html += "<div class=\"calendar_day_button\">"
         if self.get_day_str() != "":
-            html += "<a href=\"%s?start_date=%s&end_date=%s\">%s</a>" % (reverse('todo_create', args=()),
+            html += "<a href=\"%s?start_date=%s&end_date=%s\" class=\"btn-floating btn-large waves-effect waves-light blue-grey\">%s</a>" % (reverse('todo_create', args=()),
                                                                          self.get_start_datetime(),
                                                                          self.get_end_datetime(),
                                                                          self.get_day_str())
-        html += "</div>"
 
         for i in range(len(self.event)):
             if self.event[i] is not None:
                 html += self.event[i].html_event()
             else:
-                html += "<div class=\"calendar_event none_event btn white\">　</div>"
+                html += "<div class=\"calendar_event none_event btn white z-depth-0\"></div>"
         html += "</div>"
         return html
 
