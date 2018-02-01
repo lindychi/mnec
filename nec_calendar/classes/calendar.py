@@ -56,6 +56,8 @@ class Calendar:
                 token_value = "0"
             if token_value is "1":
                 self.first_day_index = len(self.calendar_array) - 1
+                for i in range(self.first_day_index):
+                    self.calendar_array[i].token_value = str(i - self.first_day_index)
             self.calendar_array.append(Day(token_class,
                                        self.year,
                                        self.month,
@@ -150,19 +152,21 @@ class Calendar:
 
     def html_calendar(self):
         """Return html format calendar."""
-        html =  "<div class=\"calendar_wrapper\">"
-        html += "  <a href=\"" + self.get_url(self.get_prev_month()) + "\" class=\"btn-floating red\"><i class=\"material-icons\">arrow_back</i></a>"
-        html += "  <div class=\"current-month\">" + str(self.year) + "년 " + str(self.month) + "월</div>"
-        html += "  <a href=\"" + self.get_url(self.get_next_month()) + "\" class=\"btn-floating red\"><i class=\"material-icons\">arrow_forward</i></a>"
+        html = "<div class=\"calendar_wrapper\">"
+        html += " <div class=\"center\">"
+        html += "  <span><a href=\"" + self.get_url(self.get_prev_month()) + "\"><i class=\"material-icons\">chevron_left</i></a></span>"
+        html += "  <span class=\"calendar_year_month_str\">" + str(self.year) + "년 " + str(self.month) + "월</span>"
+        html += "  <span><a href=\"" + self.get_url(self.get_next_month()) + "\"><i class=\"material-icons\">chevron_right</i></a></span>"
+        html += " </div>"
         html += "  <div class=\"calendar\">"
-        html += "    <div class=\"calendar_header\">"
-        html += "      <div>일</div>"
-        html += "      <div>월</div>"
-        html += "      <div>화</div>"
-        html += "      <div>수</div>"
-        html += "      <div>목</div>"
-        html += "      <div>금</div>"
-        html += "      <div>토</div>"
+        html += "    <div class=\"calendar_week\">"
+        html += "      <div class=\"calendar_header\">일</div>"
+        html += "      <div class=\"calendar_header\">월</div>"
+        html += "      <div class=\"calendar_header\">화</div>"
+        html += "      <div class=\"calendar_header\">수</div>"
+        html += "      <div class=\"calendar_header\">목</div>"
+        html += "      <div class=\"calendar_header\">금</div>"
+        html += "      <div class=\"calendar_header\">토</div>"
         html += "    </div>"
         for i in range(len(self.calendar_array)):
             if i % 7 is 0:

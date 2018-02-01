@@ -97,6 +97,7 @@ main {
   margin-top: 0.5rem;
   text-align: left;
   padding: 0.5rem;
+  width: 100%;
 }
 
 .completed_event {
