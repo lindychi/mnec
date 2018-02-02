@@ -17,13 +17,12 @@ def index(request):
 def view_page(request, page_name):
     try:
         page = Page.objects.get(title=page_name, owner=request.user)
-        tags = page.tags.all()
     except Page.DoesNotExist:
         return render(request, 'nec_wiki/no_page.html',
                       {'page_name': page_name})
     content = page.content
     return render(request, 'nec_wiki/view_page.html',
-                  {'content': markdown.markdown(content), 'page':page})
+                  {'content': markdown.markdown(content), 'page': page})
 
 
 @login_required(login_url=settings.LOGIN_URL)
