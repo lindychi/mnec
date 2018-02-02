@@ -23,10 +23,10 @@ class Event:
         print(" - " + self.title)
 
     def html_event(self):
-        html =  "<div class=\"calendar_event btn truncate left"
+        html =  "<a href=\"" + self.url + "\"><div class=\"calendar_event btn truncate left"
         if self.complete:
             html += " completed_event"
         html += "\">"
-        html += "<a href=\"" + self.url + "\">" + self.title + "</a>"
-        html += "</div>"
+        html += self.title
+        html += "</div></a>"
         return html
