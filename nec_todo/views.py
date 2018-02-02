@@ -82,7 +82,7 @@ def view(request, todo_name):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def edit(request, user_name, todo_id):
+def edit(request, todo_id):
     """Edit todo content.
 
     when edit todo, search with todo_id.
@@ -105,18 +105,17 @@ def edit(request, user_name, todo_id):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def delete(request, user_name, todo_id):
+def delete(request, todo_id):
     """Delete todo object."""
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     title = todo.title
     todo.delete()
-    do
     return redirect(reverse('todo_view',
                             args=(request.user.username, title, )))
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def do(request, user_name, todo_id):
+def do(request, todo_id):
     """Do todo object.
 
     if todo.daily is True. todo obect is copy & save with current time

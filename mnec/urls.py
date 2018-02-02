@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^wiki/', include('nec_wiki.urls')),
     url(r'^todo/', include('nec_todo.urls')),
     url(r'^calendar/', include('nec_calendar.urls')),
+    url(r'^bank/', include('nec_bank.urls')),
     url(r'', include('nec.urls')),
 ]
