@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.urls import reverse
+from django.utils import timezone
 
 from .forms import MoneyForm
 from .models import Money
@@ -27,13 +28,16 @@ def create_money(request):
         else:
             return render(request, 'nec_bank/create_money.html', {'money_form': form})
     else:
+        request.GET._mutable = True
+        request.GET['created_date'] = timezone.now().astimezone().strftime('%Y-%m-%d %H:%M:%S')
+        request.GET._mutable = False
         form = MoneyForm(request.GET)
         return render(request, 'nec_bank/create_money.html', {'money_form': form})
 
 
 def view_money(request, money_id):
     money = Money.objects.get(id=money_id)
-    return render(request, 'nec_bank/view_money.html', {'money':money});
+    return render(request, 'nec_bank/view_money.html', {'money': money});
 
 
 @login_required(login_url=settings.LOGIN_URL)

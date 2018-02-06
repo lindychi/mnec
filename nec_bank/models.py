@@ -15,7 +15,7 @@ class Money(models.Model):
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)
     balance = models.IntegerField()
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
 
     def __str__(self):
         """Moneyunit to string.
