@@ -51,8 +51,8 @@ def edit_page(request, user_name, page_name):
     try:
         page = Page.objects.get(owner=request.user, title=page_name)
     except Page.DoesNotExist:
-        return render(request, 'nec_wiki/no_page.html',
-                      {'page_name': page_name})
+        page = Page(owner=request.user, title=page_name)
+        page.save()
     if request.method == 'POST':
         page_form = PageForm(request.POST, request.FILES, instance=page)
         if page_form.is_valid():
