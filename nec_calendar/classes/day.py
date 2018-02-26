@@ -121,7 +121,10 @@ class Day:
             if self.event[i] is not None:
                 html += self.event[i].html_event()
             else:
-                html += "<div class=\"calendar_event none_event btn white z-depth-0\"></div>"
+                html += "<div class=\"calendar_event btn z-depth-0 none_event"
+                if self.is_today():
+                    html += " calendar_today"
+                html += "\"></div>"
         html += "</div>"
         return html
 
