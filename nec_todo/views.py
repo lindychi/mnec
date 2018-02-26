@@ -111,7 +111,7 @@ def delete(request, todo_id):
     title = todo.title
     todo.delete()
     return redirect(reverse('todo_view',
-                            args=(request.user.username, title, )))
+                            args=(title, )))
 
 
 @login_required(login_url=settings.LOGIN_URL)

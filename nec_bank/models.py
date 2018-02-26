@@ -1,3 +1,4 @@
+import markdown
 from django.db import models
 
 
@@ -14,7 +15,7 @@ class Money(models.Model):
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)
     balance = models.IntegerField()
-    created_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
 
     def __str__(self):
         """Moneyunit to string.
@@ -25,3 +26,6 @@ class Money(models.Model):
 
     def get_absolute_url(self):
         return reverse('bank_view_money', args=(self.id, ))
+
+    def get_markdown_content(self):
+        return markdown.markdown(self.text)

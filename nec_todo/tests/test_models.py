@@ -20,4 +20,4 @@ class TodoModelTest(TestCase):
     def test_get_absolute_url(self):
         """Absolute url test."""
         todo = Todo.objects.get(id=1)
-        self.assertEquals(todo.get_absolute_url(), '/todo/view/hanchi/test/')
+        self.assertEquals(todo.get_absolute_url(), '/todo/view/test/')

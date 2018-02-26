@@ -10,19 +10,19 @@
                 <th>제목</th>
                 <th>금액</th>
             </tr>
-            {% for money_unit in money_unit_lists %}
+            {% for money in money_list %}
                 <tr>
                     <td>
-                        {{ money_unit.created_date }}
+                        {{ money.created_date }}
                     </td>
                     <td>
-                        {{ money_unit.category}}
+                        {{ money.category}}
                     </td>
                     <td>
-                        {{ money_unit.title }}
+                        <a href="{% url 'bank_view_money' money.id %}">{{ money.title }}</a>
                     </td>
                     <td>
-                        {{ money_unit.balance }}
+                        {{ money.balance }}
                     </td>
                 </tr>
             {% endfor %}
