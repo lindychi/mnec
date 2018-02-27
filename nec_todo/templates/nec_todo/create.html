@@ -7,3 +7,10 @@
         <button type="submit" class="btn btn-primary">페이지 저장</button>
     </form>
 {% endblock %}
+
+{% block javascript %}
+    <script>
+    $('#id_content').val('New Text');
+    $('#id_content').trigger('autoresize');
+    </script>
+{% endblock %}

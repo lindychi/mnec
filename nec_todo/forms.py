@@ -1,4 +1,4 @@
-from django.forms import ModelForm, widgets
+from django.forms import ModelForm, widgets, Textarea, TextInput
 from .models import Todo
 
 
