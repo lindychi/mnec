@@ -15,37 +15,23 @@
 {% for field in form.visible_fields %}
     <div class="row">
         <div class="input-field col s12">
-        {{ field.label_tag }}
-        {% if form.is_bound %}
-            {% if field.errors %}
-                {% if field.widget is Textarea %}
-                    {% render_field field class="form-control materialize-textarea" %}
-                {% else %}
-                    {% render_field field class="form-control is-invalid" %}
-                {% endif %}
-                {% for error in field.errors %}
-                    <div class="invalid-feedback">
-                        {{ error }}
-                    </div>
-                {% endfor %}
-            {% else %}
-                {% if field.widget is Textarea %}
-                    {% render_field field class="form-control materialize-textarea" %}
-                {% else %}
-                    {% render_field field class="form-control is-valid" %}
-                {% endif %}
-            {% endif %}
+        {% if field.widget is Textarea %}
+            {% render_field field class="materialize-textarea" %}
         {% else %}
-            {% if field.widget is Textarea %}
-                {% render_field field class="form-control materialize-textarea" %}
-            {% else %}
-                {% render_field field class="form-control" %}
-            {% endif %}
+            {% render_field field %}
+        {% endif %}
+        {{ field.label_tag }}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <div class="invalid-feedback">
+                    {{ error }}
+                </div>
+            {% endfor %}
         {% endif %}
 
+        </div>
         {% if field.help_text %}
             <small class="form-text text-muted">{{ field.help_text | safe }}</small>
         {% endif %}
-        </div>
     </div>
 {% endfor %}
