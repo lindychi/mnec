@@ -17,6 +17,13 @@
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     {% block javascript %}{% endblock %}
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="{% static 'js/materialize.min.js' %}"></script>
+    <script>
+      $('.materialize-textarea').trigger('autoresize');
+
+    </script>
 </head>
 <body>
 <nav>
@@ -60,13 +67,7 @@
     </div>
 </div>
 
-<script>
-    $('.materialize-textarea').trigger('autoresize');
-</script>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="{% static 'js/min/plugins.min.js' %}"></script>
-    <script src="{% static 'js/min/main.min.js' %}"></script>
-    <script src="{% static 'js/materialize.min.js' %}"></script>
+
   </body>
   <footer class="page-footer">
       <div class="footer-copyright">

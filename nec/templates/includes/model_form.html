@@ -16,7 +16,12 @@
     <div class="row">
         <div class="input-field col s12">
         {% if field.widget is Textarea %}
-            {% render_field field class="materialize-textarea" %}
+            {% ifequal field.name "tags" %}
+                <div class="materialize-chips"></div>
+                <input type="hidden" name="{{ field.name }}" id="id_{{ field.name }}" required/>
+            {% else %}
+                {% render_field field class="materialize-textarea" %}
+            {% endifequal %}
         {% else %}
             {% render_field field %}
         {% endif %}
@@ -35,3 +40,22 @@
         {% endif %}
     </div>
 {% endfor %}
+
+{% block javascript %}
+<script>
+$(document).ready(() => {
+$('.materialize-chips').material_chip();
+$('.chips').on('chip.add', function(e, chip){
+  $('.materialize-chips').input('');
+  $('.materialize-chips').material_chip('data').each(function(object) {
+    alert(object);
+  });
+});
+
+$('.chips').on('chip.delete', function(e, chip){
+  // you have the deleted chip here
+});
+
+});
+</script>
+{% endblock %}
