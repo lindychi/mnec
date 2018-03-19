@@ -26,13 +26,26 @@ class Page(models.Model):
         tag_list = []
         if tag_string.lstrip().rstrip():
             tag_list = [Tag.objects.get_or_create(name=tag.rstrip().lstrip('#'), owner=self.owner)[0] for tag in tag_string.lstrip(' #').split('#')]
-        self.tags.clear()
+        if self.tags.count() > 0:
+            self.tags.clear()
         for tag in tag_list:
             self.tags.add(tag)
         self.save()
 
+    def save_form(self, form):
+        self.title = form.cleaned_data['title']
+        self.content = form.cleaned_data['content']
+        self.setTags(form.cleaned_data['tags'])
+        self.save()
+
+    def getTags(self):
+        tag_str = ""
+        for tag in self.tags.all():
+            tag_str = tag_str + tag.name
+        return tag_str
+
     def get_absolute_url(self):
-        return reverse('wiki_view_page', args=(self.owner.username, self.title, ))
+        return reverse('wiki_view_page', args=(self.title, ))
 
     def get_markdown_content(self):
         return markdown.markdown(self.content)

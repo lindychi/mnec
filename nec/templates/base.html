@@ -9,7 +9,6 @@
     <title>기록{% block title %}{% endblock %}</title>
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     {% block css %}{% endblock %}
@@ -22,7 +21,18 @@
     <script src="{% static 'js/materialize.min.js' %}"></script>
     <script>
       $('.materialize-textarea').trigger('autoresize');
+      $(document).ready(() => {
+        $('.materialize-chips').material_chip({% block chips_init %}{% endblock %});
 
+        $("form").on("submit", function() {
+          $chips = "";
+          $.each($(".materialize-chips").material_chip('data'), function(index, chip) {
+            $chips += " #" +chip.tag;
+          });
+          $("#id_tags").attr('value', $chips);
+          event.parentDefault();
+        });
+      });
     </script>
 </head>
 <body>

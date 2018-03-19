@@ -5,7 +5,7 @@
   <h1>{{ page.title }}</h1>
   {{ page.get_markdown_content | wikify | safe }}
   <hr/>
-  <p>Tags: {% for tag in page.tags.all %} <a href="{% url 'wiki_view_tag' request.user.username tag.name %}">#{{tag.name}}</a> {% endfor %}</p>
+  <p>Tags: {% for tag in page.tags.all %} <a href="{% url 'wiki_view_tag' request.user.username tag.name %}"><div class="chip">{{tag.name}}</div></a> {% endfor %}</p>
   <a href="{% url 'wiki_edit_page' request.user.username page.title %}">페이지 수정</a>
   <a href="{% url 'wiki_delete_page' request.user.username page.title %}">페이지 삭제</a>
     <h2>로그</h2>

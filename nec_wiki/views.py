@@ -56,7 +56,7 @@ def edit_page(request, user_name, page_name):
     if request.method == 'POST':
         page_form = PageForm(request.POST, request.FILES, instance=page)
         if page_form.is_valid():
-            page = page_form.save()
+            page.save_form(page_form)
             return redirect(page)
         else:
             return render(request, 'nec_wiki/edit_page.html',
@@ -72,9 +72,7 @@ def create_page(request, user_name):
     if request.method == 'POST':
         form = PageForm(request.POST, request.FILES)
         if form.is_valid():
-            page = form.save(commit=False)
-            page.owner = request.user
-            page.save()
+            page.save_form(page_form)
             return redirect(page)
         else:
             return render(request, 'nec_wiki/create_page.html',
@@ -90,9 +88,7 @@ def create_tag(request, user_name):
     if request.method == 'POST':
         form = TagForm(request.POST, request.FILES)
         if form.is_valid():
-            tag = form.save(commit=False)
-            tag.owner = request.user
-            tag.save()
+            tag = form.save(request.user)
             return redirect(tag)
         else:
             return render(request, 'nec_wiki/create_tag.html',
