@@ -20,13 +20,16 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="{% static 'js/materialize.min.js' %}"></script>
     <script>
+      var elem = document.querySelector('.chips');
+      var instance = M.Chips.init(elem, options);
+
       $('.materialize-textarea').trigger('autoresize');
       $(document).ready(() => {
-        $('.materialize-chips').material_chip({% block chips_init %}{% endblock %});
+        $('.materialize-chips').chips({% block chips_init %}{% endblock %});
 
         $("form").on("submit", function() {
           $chips = "";
-          $.each($(".materialize-chips").material_chip('data'), function(index, chip) {
+          $.each($(".materialize-chips").chips('data'), function(index, chip) {
             $chips += " #" +chip.tag;
           });
           $("#id_tags").attr('value', $chips);
