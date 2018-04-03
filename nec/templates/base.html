@@ -26,7 +26,7 @@
 
         $("form").on("submit", function() {
           $chips = "";
-          $.each($(".materialize-chips").chips('data'), function(index, chip) {
+          $.each($(".materialize-chips").chips('getData'), function(index, chip) {
             $chips += " #" +chip.tag;
           });
           $("#id_tags").attr('value', $chips);
