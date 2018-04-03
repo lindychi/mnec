@@ -72,7 +72,9 @@ def create_page(request, user_name):
     if request.method == 'POST':
         form = PageForm(request.POST, request.FILES)
         if form.is_valid():
-            page.save_form(page_form)
+            page = Page(owner=request.user)
+            page.save() #for set id
+            page.save_form(form)
             return redirect(page)
         else:
             return render(request, 'nec_wiki/create_page.html',

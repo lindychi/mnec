@@ -26,11 +26,10 @@ class Page(models.Model):
         tag_list = []
         if tag_string.lstrip().rstrip():
             tag_list = [Tag.objects.get_or_create(name=tag.rstrip().lstrip('#'), owner=self.owner)[0] for tag in tag_string.lstrip(' #').split('#')]
-        if self.tags.count() > 0:
+        if self.tags and self.tags.count() > 0:
             self.tags.clear()
         for tag in tag_list:
             self.tags.add(tag)
-        self.save()
 
     def save_form(self, form):
         self.title = form.cleaned_data['title']
