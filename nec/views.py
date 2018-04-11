@@ -11,14 +11,16 @@ from nec_todo.models import Todo
 
 def dashboard(request):
     if request.user.is_authenticated:
-        bucketlists = BucketList.objects.filter(
-            author=request.user,
-            created_date__lte=datetime.datetime.now()).order_by('-created_date')
-        todolists = Todo.objects.filter(
-            owner=request.user,
-            created_date__lte=datetime.datetime.now()).order_by('-created_date')
-        return render(request, 'nec/dashboard.html',
-                      {'bucketlists': bucketlists, 'todolists': todolists})
+        return reverse('todo_index')
+    # if request.user.is_authenticated:
+    #     bucketlists = BucketList.objects.filter(
+    #         author=request.user,
+    #         created_date__lte=datetime.datetime.now()).order_by('-created_date')
+    #     todolists = Todo.objects.filter(
+    #         owner=request.user,
+    #         created_date__lte=datetime.datetime.now()).order_by('-created_date')
+    #     return render(request, 'nec/dashboard.html',
+    #                   {'bucketlists': bucketlists, 'todolists': todolists})
     else:
         return redirect(settings.LOGIN_URL)
 
