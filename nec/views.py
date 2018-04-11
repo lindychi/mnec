@@ -11,7 +11,7 @@ from nec_todo.models import Todo
 
 def dashboard(request):
     if request.user.is_authenticated:
-        return reverse('todo_index')
+        return redirect(reverse('todo_index'))
     # if request.user.is_authenticated:
     #     bucketlists = BucketList.objects.filter(
     #         author=request.user,
