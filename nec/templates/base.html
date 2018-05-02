@@ -7,10 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>기록{% block title %}{% endblock %}</title>
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
-
+    <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+    <!-- <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}"> -->
     {% block css %}{% endblock %}
 
     <!--Load the AJAX API-->
@@ -18,19 +19,17 @@
     {% block javascript %}{% endblock %}
 
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script src="{% static 'js/materialize.min.js' %}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script> -->
+    <!-- <script src="{% static 'js/materialize.min.js' %}"></script> -->
     <script>
-      $('.materialize-textarea').trigger('autoresize');
       $(document).ready(() => {
         $('.materialize-chips').chips({% block chips_init %}{% endblock %});
-
         $("form").on("submit", function() {
           $chips = "";
           $.each($(".materialize-chips").chips('getData'), function(index, chip) {
             $chips += " #" +chip.tag;
           });
           $("#id_tags").attr('value', $chips);
-          event.parentDefault();
         });
         $(".calendar_today").focus();
       });
@@ -78,7 +77,8 @@
     </div>
 </div>
 
-
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
   </body>
   <footer class="page-footer">
       <div class="footer-copyright">
