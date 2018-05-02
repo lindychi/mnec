@@ -1,4 +1,5 @@
 import markdown
+import re
 from django.db import models
 
 
@@ -28,4 +29,4 @@ class Money(models.Model):
         return reverse('bank_view_money', args=(self.id, ))
 
     def get_markdown_content(self):
-        return markdown.markdown(self.text)
+        return markdown.markdown(re.sub(r"\n", "<br />", self.text))

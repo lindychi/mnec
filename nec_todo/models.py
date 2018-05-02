@@ -1,4 +1,5 @@
 import markdown
+import re
 from django.db import models
 from django.urls import reverse
 
@@ -31,4 +32,4 @@ class Todo(models.Model):
         return [self.start_date]
 
     def get_markdown_content(self):
-        return markdown.markdown(self.content)
+        return markdown.markdown(re.sub(r"\n", "<br />", self.content))

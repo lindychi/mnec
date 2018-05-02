@@ -1,6 +1,7 @@
 from django.db import models
 import markdown
 from django.urls import reverse
+import re
 
 
 class Tag(models.Model):
@@ -47,4 +48,4 @@ class Page(models.Model):
         return reverse('wiki_view_page', args=(self.title, ))
 
     def get_markdown_content(self):
-        return markdown.markdown(self.content)
+        return markdown.markdown(re.sub(r"\n", "<br />", self.content))
