@@ -9,7 +9,7 @@ from .forms import PageForm, TagForm
 
 @login_required(login_url=settings.LOGIN_URL)
 def index(request):
-    page_list = Page.objects.all()
+    page_list = Page.objects.all().order_by('-update_date')[:30]
     return render(request, 'nec_wiki/dashboard.html', {'page_list': page_list})
 
 

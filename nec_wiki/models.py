@@ -20,6 +20,7 @@ class Page(models.Model):
     content = models.TextField(blank=True)
     todo_log = models.TextField(blank=True)
     tags = models.ManyToManyField(Tag)
+    update_date = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.owner.username + " - " + self.title
 
