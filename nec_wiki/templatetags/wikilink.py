@@ -1,7 +1,7 @@
 from django import template
 import re
 
-wikilink = re.compile("\[\[([^\|]]+)\]\]")
+wikilink = re.compile("\[\[([^|\]]+)\]\]")
 wikiotherlink = re.compile("\[\[([^|]+)|([^\]]+)\]\]")
 wikiurl = re.compile("\[([^|]+)\|([^\]]+)\]")
 youtubelink = re.compile(r"youtube=([0-9a-zA-Z]+)")
