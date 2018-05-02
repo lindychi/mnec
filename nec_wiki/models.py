@@ -7,6 +7,7 @@ import re
 class Tag(models.Model):
     name = models.CharField(max_length=64)
     owner = models.ForeignKey('auth.User')
+    update_date = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.owner.username + " - " + self.name
 

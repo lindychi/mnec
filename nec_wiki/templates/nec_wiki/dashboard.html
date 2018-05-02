@@ -3,8 +3,18 @@
 {% block content %}
   <h1>최근 페이지들</h1></br>
   <a href="{% url 'wiki_create_page' request.user.username %}"><button class="btn btn-primary">페이지 생성</button></a></br>
-  <h2>최근 페이지</h2>
-  {% for page in page_list %}
-    <a href="{% url 'wiki_view_page' page.title %}">{{ page.title }}</a></br>
-  {% endfor %}
+  <div>
+    <div class="left_grid col s12 m6 l6">
+      <h2>최근 페이지</h2>
+        {% for page in page_list %}
+          <a href="{% url 'wiki_view_page' page.title %}">{{ page.title }}</a></br>
+        {% endfor %}
+    </div>
+    <div class="right_grid col s12 m6 l6">
+      <h2>최근 태그</h2>
+        {% for tag in tag_list %}
+          <a href="{% url 'wiki_view_tag' request.user.username tag.name %}">{{ tag.name }}</a></br>
+        {% endfor %}
+    </div>
+  </div>
 {% endblock %}
