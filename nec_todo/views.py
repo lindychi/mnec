@@ -123,6 +123,7 @@ def do(request, todo_id):
     else just complete todo object.
     """
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
+    now = timezone.now()
     if todo.daily:
         now = timezone.now()
         new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content,
@@ -134,19 +135,45 @@ def do(request, todo_id):
         todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
         todo.end_date = next_day.astimezone().strftime('%Y-%m-%d')
         todo.save()
-
-        if todo.daily_page:
-            try:
-                page = Page.objects.get(owner=request.user, title=todo.daily_page)
-            except Page.DoesNotExist:
-                page = Page(owner=request.user, title=todo.daily_page)
-            log_msg = "%s <a href=\"%s\">%s</a>을 수행함.</br>" % (now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                                                               reverse('todo_view', args=(request.user.username, todo.title,)),
-                                                               todo.title)
-            page.todo_log = log_msg + page.todo_log
-            page.save()
     else:
         todo.complete = True
         todo.end_date = timezone.datetime.now()
         todo.save()
+
+    if todo.daily_page:
+        try:
+            page = Page.objects.get(owner=request.user, title=todo.daily_page)
+        except Page.DoesNotExist:
+            page = Page(owner=request.user, title=todo.daily_page)
+        log_msg = "%s <a href=\"%s\">%s</a>을 완료함.</br>" % (now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                                                              reverse('todo_view', args=(todo.title,)),
+                                                              todo.title)
+        page.todo_log = log_msg + page.todo_log
+        page.save()
+    return redirect(reverse('todo_index'))
+
+@login_required(login_url=settings.LOGIN_URL)
+def undo(request, todo_id):
+    """Undo todo object.
+
+    if todo.daily is True. todo obect is copy & save with current time
+    and then write 'do todo object' in wiki_page.
+    else just complete todo object.
+    """
+    todo = Todo.objects.get(id=int(todo_id), owner=request.user)
+    now = timezone.now()
+    todo.complete = False
+    todo.end_date = todo.start_date
+    todo.save()
+
+    if todo.daily_page:
+        try:
+            page = Page.objects.get(owner=request.user, title=todo.daily_page)
+        except Page.DoesNotExist:
+            page = Page(owner=request.user, title=todo.daily_page)
+        log_msg = "%s <a href=\"%s\">%s</a>을 재수행함.</br>" % (now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                                                                reverse('todo_view', args=(todo.title,)),
+                                                                todo.title)
+        page.todo_log = log_msg + page.todo_log
+        page.save()
     return redirect(reverse('todo_index'))
