@@ -21,7 +21,7 @@ def view_page(request, page_name):
     except Page.DoesNotExist:
         return render(request, 'nec_wiki/no_page.html',
                       {'page_name': page_name})
-    content = page.content
+    content = page.get_markdown_content()
     return render(request, 'nec_wiki/view_page.html',
                   {'content': markdown.markdown(content), 'page': page})
 

@@ -2,7 +2,12 @@
 
 {% block content %}
     <div class="main-content">
-        <a href="{% url 'bank_create_money' %}" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a>
+        {# <a href="{% url 'bank_create_money' %}" class="btn-floating btn-large waves-effect waves-light red"><i class="material-icons">add</i></a> #}
+        {% for bank in bank_list %}
+          <a href="{% url 'bank_index' bank.id %}" class="btn waves-effect waves-light red">{{bank.name}}</a>
+        {% endfor %}
+        <a href="{% url 'bank_create_bank' %}" class="btn waves-effect waves-light red">add bank</a></br>
+        <a href="{% url 'bank_create_money' %}" class="btn waves-effect waves-light red">add money unit</a></br>
         <table>
             <tr>
                 <th>날짜</th>

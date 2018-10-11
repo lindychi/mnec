@@ -1,0 +1,10 @@
+{% extends 'nec_bank/base.html' %}
+{% load wikilink %}
+
+{% block content %}
+    <h1>{{ bank.name }}</h1>
+    {{ bank.get_markdown_content | wikify | safe }}
+    <hr/>
+    <a href="{% url 'bank_edit_bank' bank.id %}"><button class="btn btn-info">돈 수정</button></a>
+    <a href="{% url 'bank_delete_bank' bank.id %}"><button class="btn btn-danger">돈 삭제</button></a>
+{% endblock %}

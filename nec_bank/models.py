@@ -6,12 +6,21 @@ from django.db import models
 # Create your models here.
 from django.urls import reverse
 
+class Bank(models.Model):
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    name = models.CharField(max_length=1024)
+
+    def get_absolute_url(self):
+        return reverse('bank_view_bank', args=(self.id, ))
+
+    def __str__(self):
+        return self.owner.username + " - " + self.name
 
 class Money(models.Model):
     """For my account book."""
 
-    owner = models.ForeignKey('auth.User')
-    bank = models.TextField()
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+    bank = models.ForeignKey('Bank')
     category = models.CharField(max_length=1024)
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)

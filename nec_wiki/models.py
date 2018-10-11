@@ -1,5 +1,6 @@
 from django.db import models
 import markdown
+from markdown.extensions.wikilinks import WikiLinkExtension
 from django.urls import reverse
 import re
 
@@ -50,4 +51,4 @@ class Page(models.Model):
         return reverse('wiki_view_page', args=(self.title, ))
 
     def get_markdown_content(self):
-        return markdown.markdown(re.sub(r"\n", "<br />", self.content))
+        return markdown.markdown(re.sub(r"\n", "<br />", self.content), extensions=[WikiLinkExtension(base_url='/wiki/page/', end_url='')])

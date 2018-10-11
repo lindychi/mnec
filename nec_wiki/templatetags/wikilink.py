@@ -1,9 +1,7 @@
 from django import template
 import re
 
-wikiotherlink = re.compile("\[\[([^|]+)\|([^\]]+)\]\]")
-wikilink = re.compile("\[\[([^\]]+)\]\]")
-wikiurl = re.compile("\[([^|]+)\|([^\]]+)\]")
+wikiotherlink = re.compile("\[\[([^\|]+)\|([^\]]+)\]\]")
 youtubelink = re.compile(r"youtube=([0-9a-zA-Z]+)")
 register = template.Library()
 
@@ -12,7 +10,5 @@ register = template.Library()
 def wikify(value):
     """Substitute the wiki syntax."""
     value = wikiotherlink.sub(r"<a href='/wiki/page/\2'>\1</a>", value)
-    value = wikilink.sub(r"<a href='/wiki/page/\1'>\1</a>", value)
-    value = wikiurl.sub(r"<a href='\2'>\1</a>", value)
     value = youtubelink.sub(r'<iframe width="560" height="315" src="https://www.youtube.com/embed/\1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>', value)
     return value
