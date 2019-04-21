@@ -12,14 +12,28 @@ from nec_wiki.models import Page
 
 
 # Create your views here.
+# def index(request):
+#     """Todo index page.
+#
+#     list up all todo with current user
+#     """
+#     return calendar(request, timezone.datetime.now().year, timezone.datetime.now().month)
+
+# Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
 def index(request):
-    """Todo index page.
+    todo_list = get_event_array(request)
+    return render(request, 'nec_todo/calendar.html', {'todo_list':todo_list})
 
-    list up all todo with current user
-    """
-    return calendar(request, timezone.datetime.now().year, timezone.datetime.now().month)
+@login_required(login_url=settings.LOGIN_URL)
+def get_event_array(request):
+    todo_list = Todo.objects.filter(owner=request.user)
+    todo_array = []
 
+    for todo in todo_list:
+        todo_array.append(todo.get_event())
+
+    return "[" + ",".join(todo_array) + "]"
 
 @login_required(login_url=settings.LOGIN_URL)
 def calendar(request, year, month):

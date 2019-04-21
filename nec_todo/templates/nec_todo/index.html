@@ -1,0 +1,39 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" href="{% static 'css/nec_calendar/calendar.css' %}">
+<link href="{% static 'fullcalendar/core/main.css' %}" rel="stylesheet" />
+<link href="{% static 'fullcalendar/daygrid/main.css' %}" rel="stylesheet" />
+
+<script src="{% static 'fullcalendar/core/main.js' %}"></script>
+<script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
+
+<script>
+  function zeroPad(n, width) {
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join('0') + n;
+  }
+
+  function getDateString(date) {
+    return date.getFullYear() + "-" + zeroPad(date.getMonth() + 1, 2) + "-" + zeroPad(date.getDate(), 2);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: ['dayGrid'],
+      navLinks: true,
+      navLinkDayClick: function(date, jsEvent) {
+        window.location.replace('create/?start_date='+getDateString(date)+' 00:00:00&end_date='+getDateString(date)+' 23:59:59');
+      },
+      events: {{ todo_list | safe }},
+      timeZone: 'UTC',
+      eventClick: function(info) {
+        window.location.replace(info.url);
+      },
+    });
+    calendar.render();
+  });
+</script>
+
+{{ todo_list }}
+<div id="calendar"></div>

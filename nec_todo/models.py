@@ -2,6 +2,7 @@ import markdown
 import re
 from django.db import models
 from django.urls import reverse
+from datetime import timedelta
 
 
 # Create your models here.
@@ -33,3 +34,26 @@ class Todo(models.Model):
 
     def get_markdown_content(self):
         return markdown.markdown(re.sub(r"\n", "<br />", self.content))
+
+    def get_date_or_time(self, date):
+        if date.strftime("%H:%M:%S") == "00:00:00":
+            return date.strftime("%Y-%m-%d")
+        else:
+            return date.strftime("%Y-%m-%d %H:%M:%S")
+
+    def get_event(self):
+        start_date = self.start_date + timedelta(hours=9)
+        end_date = self.end_date + timedelta(hours=9)
+        attr_list = []
+        attr_list.append("title:'"+self.title+"'")
+        attr_list.append("start:'"+self.get_date_or_time(start_date)+"'")
+        if self.end_date is not self.created_date:
+            attr_list.append("end:'"+self.get_date_or_time(end_date)+"'")
+        attr_list.append("url:'"+reverse('todo_view', args=(self.title, ))+"'")
+        if self.complete:
+            attr_list.append("color:'#4caf50'")
+            attr_list.append("textColor:'black'")
+        else:
+            attr_list.append("color:'#e57373'")
+            attr_list.append("textColor:'black'")
+        return "{" + ",".join(attr_list) + "}"
