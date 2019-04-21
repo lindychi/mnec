@@ -14,8 +14,15 @@
   }
 
   function getDateString(date) {
-    return date.getFullYear() + "-" + zeroPad(date.getMonth() + 1, 2) + "-" + zeroPad(date.getDate(), 2);
+    alert(date);
+    return date.getFullYear() + "-" + zeroPad(date.getMonth() + 1, 2) + "-" + zeroPad(date.getDate(), 2) + " 00:00:00";
   }
+
+  Date.prototype.addDays = function(days) {
+      var date = new Date(this.valueOf());
+      date.setDate(date.getDate() + days);
+      return date;
+  };
 
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
@@ -23,7 +30,8 @@
       plugins: ['dayGrid'],
       navLinks: true,
       navLinkDayClick: function(date, jsEvent) {
-        window.location.replace('create/?start_date='+getDateString(date)+' 00:00:00&end_date='+getDateString(date)+' 23:59:59');
+        alert('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
+        window.location.replace('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
       },
       events: {{ todo_list | safe }},
       timeZone: 'UTC',
