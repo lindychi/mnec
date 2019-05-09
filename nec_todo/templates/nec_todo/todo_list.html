@@ -3,6 +3,26 @@
 {% block content %}
   <h3>매일 할 일</h3>
   <a href="{% url 'todo_create_simple' %}"><button class="btn btn-info">할일 추가</button></a>
+  <table>
+  {% for daily in daily_list %}
+    <tr>
+      <td>
+      {% if daily.is_past_due %}
+        <span class="badge badge-primary">{{daily.end_date|timesince}} 지남</span>
+      {% else %}
+        <span class="badge badge-info">{{daily.end_date|timeuntil}} 남음</span>
+      {% endif %}
+      </td>
+      <td>
+      <a href="{% url 'todo_view' daily.title %}">{{ daily.title }}</a>
+      </td>
+      <td>
+      <a href="{% url 'todo_do' daily.id %}"><button class="badge badge-success">완료</button></a>
+      <a href="{% url 'todo_delete' daily.id %}"><button class="badge badge-primary">삭제</button></a>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
   <h3>할 일 목록</h3>
   <table>
   {% for todo in todo_list %}

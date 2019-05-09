@@ -10,6 +10,7 @@ from nec_calendar.classes.calendar import Calendar
 from django.utils import timezone
 from nec_wiki.models import Page
 from django.db.models import Q
+from datetime import timedelta,date
 
 
 # Create your views here.
@@ -29,8 +30,10 @@ def index(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def list_all(request):
-    todo_list = Todo.objects.filter(owner=request.user, complete=False).order_by('end_date')
-    return render(request, 'nec_todo/todo_list.html', {'todo_list':todo_list})
+    tommorow = date.today() + timedelta(1)
+    daily_list = Todo.objects.filter(owner=request.user, complete=False, daily=True, end_date__lt=tommorow).order_by('end_date')
+    todo_list = Todo.objects.filter(owner=request.user, complete=False, daily=False).order_by('end_date')
+    return render(request, 'nec_todo/todo_list.html', {'todo_list':todo_list, 'daily_list':daily_list})
 
 @login_required(login_url=settings.LOGIN_URL)
 def get_event_array(request):
