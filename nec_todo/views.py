@@ -146,7 +146,10 @@ def delete(request, todo_id):
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     title = todo.title
     todo.delete()
-    return redirect(request.META['HTTP_REFERER'])
+    if "view/" in request.META['HTTP_REFERER']:
+        return redirect(reverse('todo_index'))
+    else:
+        return redirect(request.META['HTTP_REFERER'])
 
 
 @login_required(login_url=settings.LOGIN_URL)
