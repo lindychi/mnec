@@ -4,16 +4,24 @@
   <h3>매일 할 일</h3>
   <a href="{% url 'todo_create_simple' %}"><button class="btn btn-info">할일 추가</button></a>
   <h3>할 일 목록</h3>
+  <table>
   {% for todo in todo_list %}
-    <div>
+    <tr>
+      <td>
       {% if todo.is_past_due %}
         <span class="badge badge-primary">{{todo.end_date|timesince}} 지남</span>
-        {{ todo.title }}
       {% else %}
         <span class="badge badge-info">{{todo.end_date|timeuntil}} 남음</span>
-        {{ todo.title }}
       {% endif %}
-      <a href="{% url 'todo_do' todo.id %}"><button class="badge badge-primary">완료</button></a>
-    </div>
+      </td>
+      <td>
+      <a href="{% url 'todo_view' todo.title %}">{{ todo.title }}</a>
+      </td>
+      <td>
+      <a href="{% url 'todo_do' todo.id %}"><button class="badge badge-success">완료</button></a>
+      <a href="{% url 'todo_delete' todo.id %}"><button class="badge badge-primary">할 일 삭제</button></a>
+      </td>
+    </tr>
   {% endfor %}
+  </table>
 {% endblock %}
