@@ -1,0 +1,18 @@
+.wrapper {
+    display: flex;
+    width: 100%;
+}
+
+#sidebar {
+    width: 250px;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
+    border-right: 5px solid pink;
+    transition: all 0.3s;
+}
+
+#content {
+  width: 100%;
+}

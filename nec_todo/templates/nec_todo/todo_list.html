@@ -1,0 +1,19 @@
+{% extends 'nec_todo/base.html' %}
+
+{% block content %}
+  <h3>매일 할 일</h3>
+  <a href="{% url 'todo_create_simple' %}"><button class="btn btn-info">할일 추가</button></a>
+  <h3>할 일 목록</h3>
+  {% for todo in todo_list %}
+    <div>
+      {% if todo.is_past_due %}
+        <span class="badge badge-primary">{{todo.end_date|timesince}} 지남</span>
+        {{ todo.title }}
+      {% else %}
+        <span class="badge badge-info">{{todo.end_date|timeuntil}} 남음</span>
+        {{ todo.title }}
+      {% endif %}
+      <a href="{% url 'todo_do' todo.id %}"><button class="badge badge-primary">완료</button></a>
+    </div>
+  {% endfor %}
+{% endblock %}

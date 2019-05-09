@@ -2,8 +2,7 @@ import markdown
 import re
 from django.db import models
 from django.urls import reverse
-from datetime import timedelta
-
+from datetime import timedelta,date
 
 # Create your models here.
 class Todo(models.Model):
@@ -57,3 +56,6 @@ class Todo(models.Model):
             attr_list.append("color:'#e57373'")
             attr_list.append("textColor:'black'")
         return "{" + ",".join(attr_list) + "}"
+
+    def is_past_due(self):
+        return date.today() > self.end_date.date()

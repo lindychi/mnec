@@ -5,6 +5,7 @@
 <link href="{% static 'fullcalendar/daygrid/main.css' %}" rel="stylesheet" />
 
 <script src="{% static 'fullcalendar/core/main.js' %}"></script>
+<script src="{% static 'fullcalendar/google-calendar/main.min.js' %}"></script>
 <script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
 
 <script>
@@ -14,7 +15,6 @@
   }
 
   function getDateString(date) {
-    alert(date);
     return date.getFullYear() + "-" + zeroPad(date.getMonth() + 1, 2) + "-" + zeroPad(date.getDate(), 2) + " 00:00:00";
   }
 
@@ -27,13 +27,20 @@
   document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-      plugins: ['dayGrid'],
+      plugins: ['dayGrid', 'googleCalendar'],
       navLinks: true,
       navLinkDayClick: function(date, jsEvent) {
-        alert('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
         window.location.replace('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
       },
-      events: {{ todo_list | safe }},
+      googleCalendarApiKey: 'AIzaSyB3VSuQOHp1VRz-JA2RYMEz5S8Cp5lpAkc',
+      events: [
+                {{ todo_list | safe }}
+              ],
+      eventSources: [
+        {
+          googleCalendarId: 'igam0000@gmail.com',
+        },
+      ],
       timeZone: 'UTC',
       eventClick: function(info) {
         window.location.replace(info.url);

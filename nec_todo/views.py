@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from nec_calendar.classes.calendar import Calendar
 from django.utils import timezone
 from nec_wiki.models import Page
+from django.db.models import Q
 
 
 # Create your views here.
@@ -25,6 +26,12 @@ def index(request):
     todo_list = get_event_array(request)
     return render(request, 'nec_todo/calendar.html', {'todo_list':todo_list})
 
+
+@login_required(login_url=settings.LOGIN_URL)
+def list_all(request):
+    todo_list = Todo.objects.filter(owner=request.user, complete=False).order_by('end_date')
+    return render(request, 'nec_todo/todo_list.html', {'todo_list':todo_list})
+
 @login_required(login_url=settings.LOGIN_URL)
 def get_event_array(request):
     todo_list = Todo.objects.filter(owner=request.user)
@@ -33,7 +40,7 @@ def get_event_array(request):
     for todo in todo_list:
         todo_array.append(todo.get_event())
 
-    return "[" + ",".join(todo_array) + "]"
+    return ",".join(todo_array)
 
 @login_required(login_url=settings.LOGIN_URL)
 def calendar(request, year, month):
@@ -82,6 +89,21 @@ def create(request):
         form = TodoForm(request.GET)
         return render(request, 'nec_todo/create.html', {'todo_form': form})
 
+@login_required(login_url=settings.LOGIN_URL)
+def create_simple(request):
+    """Create todo object."""
+    if request.method == 'POST':
+        form = TodoForm(request.POST, request.FILES)
+        if form.is_valid():
+            todo = form.save(commit=False)
+            todo.owner = request.user
+            todo.complete = False
+            todo.save()
+            return redirect(todo)
+        else:
+            return render(request, 'nec_todo/create_simple.html', {'todo_form': form, 'error_msg': error_msg})
+    else:
+        return render(request, 'nec_todo/create_simple.html')
 
 @login_required(login_url=settings.LOGIN_URL)
 def view(request, todo_name):
@@ -164,7 +186,7 @@ def do(request, todo_id):
                                                               todo.title)
         page.todo_log = log_msg + page.todo_log
         page.save()
-    return redirect(reverse('todo_index'))
+    return redirect(request.META['HTTP_REFERER'])
 
 @login_required(login_url=settings.LOGIN_URL)
 def undo(request, todo_id):

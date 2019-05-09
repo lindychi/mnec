@@ -3,6 +3,6 @@
 {%  block todo_active %}green lighten-5{% endblock %}
 
 {% block todo_inner %}
-    <li class="collection-item">목록</li>
-    <li class="collection-item">달력</li>
+    <li class="collection-item"><a href="{% url 'todo_list' %}">목록</a></li>
+    <li class="collection-item"><a href="{% url 'todo_index' %}">달력</a></li>
 {% endblock %}

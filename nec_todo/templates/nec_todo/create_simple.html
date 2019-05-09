@@ -1,0 +1,49 @@
+{% extends 'nec_todo/base.html' %}
+
+{% block content %}
+{% for field in form.fields %}
+{% if field.errors %}
+    {% for error in field.errors %}
+        {{ error }}
+    {% endfor %}
+{% endif %}
+{% endfor %}
+  <form method="post" action="{% url 'todo_create_simple' %}">
+    {% csrf_token %}
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="id_title">Title:</label>
+        <input type="text" name="title" maxlength="1024" required id="id_title" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="id_title">반복 요일</label>
+        <input type="checkbox" name="day" value="0" /><span>일</span>
+        <input type="checkbox" name="day" value="1" /><span>월</span>
+        <input type="checkbox" name="day" value="2" /><span>화</span>
+        <input type="checkbox" name="day" value="3" /><span>수</span>
+        <input type="checkbox" name="day" value="4" /><span>목</span>
+        <input type="checkbox" name="day" value="5" /><span>금</span>
+        <input type="checkbox" name="day" value="6" /><span>토</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="input-field col s12">
+        <label for="id_daily_page">Daily page:</label>
+        <textarea name="daily_page" cols="40" rows="10" id="id_daily_page" class="materialize-textarea"></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">페이지 저장</button>
+  </form>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+    $('#id_content').val('New Text');
+    $('#id_content').trigger('autoresize');
+    </script>
+{% endblock %}
