@@ -7,6 +7,7 @@
 <script src="{% static 'fullcalendar/core/main.js' %}"></script>
 <script src="{% static 'fullcalendar/google-calendar/main.min.js' %}"></script>
 <script src="{% static 'fullcalendar/daygrid/main.js' %}"></script>
+<script type='text/javascript' src="{% static 'fullcalendar/google-calendar/gcal.js' %}"></script>
 
 <script>
   function zeroPad(n, width) {
@@ -37,11 +38,12 @@
       },
       googleCalendarApiKey: 'AIzaSyB3VSuQOHp1VRz-JA2RYMEz5S8Cp5lpAkc',
       events: [
-                {{ todo_list | safe }}
+                {{ todo_list | safe }},
               ],
       eventSources: [
         {
           googleCalendarId: 'igam0000@gmail.com',
+          className: 'google event'
         },
       ],
       timeZone: 'Asia/Seoul',
