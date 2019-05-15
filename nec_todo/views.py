@@ -11,6 +11,7 @@ from django.utils import timezone
 from nec_wiki.models import Page
 from django.db.models import Q
 from datetime import timedelta,date
+from django.utils.text import Truncator
 
 
 # Create your views here.
@@ -56,7 +57,7 @@ def calendar(request, year, month):
     for todo in todo_list:
         c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
                     todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                    todo.title,
+                    Truncator(todo.title).chars(30),
                     reverse('todo_view', args=(todo.title, )),
                     todo.complete)
 

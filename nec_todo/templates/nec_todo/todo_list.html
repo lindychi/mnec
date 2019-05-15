@@ -14,7 +14,7 @@
       {% endif %}
       </td>
       <td>
-      <a href="{% url 'todo_view' daily.title %}">{{ daily.title }}</a>
+      <a href="{% url 'todo_view' daily.title %}">{{ daily.title | truncatechars:30 }}</a>
       </td>
       <td>
       <a href="{% url 'todo_delay_enddate' daily.id 1 %}"><button class="badge badge-secondary">+1</button></a>
@@ -38,7 +38,7 @@
       {% endif %}
       </td>
       <td>
-      <a href="{% url 'todo_view' todo.title %}">{{ todo.title }}</a>
+      <a href="{% url 'todo_view' todo.title %}">{{ todo.title | truncatechars:30 }}</a>
       </td>
       <td>
       <a href="{% url 'todo_delay_enddate' todo.id 1 %}"><button class="badge badge-secondary">+1</button></a>
