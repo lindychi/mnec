@@ -25,7 +25,7 @@ from django.utils.text import Truncator
 # Create your views here.
 @login_required(login_url=settings.LOGIN_URL)
 def index(request):
-    todo_list = get_event_array(request)
+    todo_list = get_event_array(request, False)
     return render(request, 'nec_todo/calendar.html', {'todo_list':todo_list})
 
 
@@ -37,8 +37,12 @@ def list_all(request):
     return render(request, 'nec_todo/todo_list.html', {'todo_list':todo_list, 'daily_list':daily_list})
 
 @login_required(login_url=settings.LOGIN_URL)
-def get_event_array(request):
-    todo_list = Todo.objects.filter(owner=request.user)
+def get_event_array(request, daily):
+    if daily:
+        todo_list = Todo.objects.filter(owner=request.user)
+    else:
+        todo_list = Todo.objects.filter(owner=request.user, daily=False)
+
     todo_array = []
 
     for todo in todo_list:
