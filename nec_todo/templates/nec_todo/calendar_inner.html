@@ -24,10 +24,11 @@
       return date;
   };
 
-  $('#calendar').fullCalendar({
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
       plugins: ['dayGrid', 'googleCalendar'],
       navLinks: true,
-			locale: "ko",
       dayClick: function(date, jsEvent) {
         window.location.replace('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
       },
@@ -48,35 +49,9 @@
         window.location.replace(info.url);
       },
       height: 'auto',
+    });
+    calendar.render();
   });
-
-
-  // document.addEventListener('DOMContentLoaded', function() {
-  //   var calendarEl = document.getElementById('calendar');
-  //   var calendar = new FullCalendar.Calendar(calendarEl, {
-  //     plugins: ['dayGrid', 'googleCalendar'],
-  //     navLinks: true,
-  //     navLinkDayClick: function(date, jsEvent) {
-  //       window.location.replace('create/?start_date='+getDateString(date)+'&end_date='+getDateString(date.addDays(1)));
-  //     },
-  //     googleCalendarApiKey: 'AIzaSyB3VSuQOHp1VRz-JA2RYMEz5S8Cp5lpAkc',
-  //     events: [
-  //               {{ todo_list | safe }}
-  //             ],
-  //     eventSources: [
-  //       {
-  //         googleCalendarId: 'igam0000@gmail.com',
-  //       },
-  //     ],
-  //     timeZone: 'Asia/Seoul',
-  //     eventClick: function(info) {
-  //       window.location.replace(info.url);
-  //     },
-  //     height: 'auto',
-  //   });
-  //   calendar.render();
-  //   calendar.updateSize();
-  // });
 </script>
 
 <div id="calendar"></div>
