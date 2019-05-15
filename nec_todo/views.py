@@ -119,6 +119,17 @@ def view(request, todo_name):
     return render(request, 'nec_todo/view.html',
                   {'todo_list': todo_list})
 
+@login_required(login_url=settings.LOGIN_URL)
+def delay_enddate(request, todo_id, day):
+    """Edit todo content.
+
+    when edit todo, search with todo_id.
+    todo_name is not unique.
+    """
+    todo = get_object_or_404(Todo, id=todo_id)
+    todo.end_date = todo.end_date + timedelta(days=int(day))
+    todo.save()
+    return redirect(request.META['HTTP_REFERER'])
 
 @login_required(login_url=settings.LOGIN_URL)
 def edit(request, todo_id):

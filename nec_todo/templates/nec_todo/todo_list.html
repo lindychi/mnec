@@ -17,6 +17,8 @@
       <a href="{% url 'todo_view' daily.title %}">{{ daily.title }}</a>
       </td>
       <td>
+      <a href="{% url 'todo_delay_enddate' daily.id 1 %}"><button class="badge badge-secondary">+1</button></a>
+      <a href="{% url 'todo_delay_enddate' daily.id 7 %}"><button class="badge badge-secondary">+7</button></a>
       <a href="{% url 'todo_edit' daily.id %}"><button class="badge badge-info">수정</button></a>
       <a href="{% url 'todo_do' daily.id %}"><button class="badge badge-success">완료</button></a>
       <a href="{% url 'todo_delete' daily.id %}"><button class="badge badge-primary">삭제</button></a>
@@ -39,6 +41,8 @@
       <a href="{% url 'todo_view' todo.title %}">{{ todo.title }}</a>
       </td>
       <td>
+      <a href="{% url 'todo_delay_enddate' todo.id 1 %}"><button class="badge badge-secondary">+1</button></a>
+      <a href="{% url 'todo_delay_enddate' todo.id 7 %}"><button class="badge badge-secondary">+7</button></a>
       <a href="{% url 'todo_edit' todo.id %}"><button class="badge badge-info">수정</button></a>
       <a href="{% url 'todo_do' todo.id %}"><button class="badge badge-success">완료</button></a>
       <a href="{% url 'todo_delete' todo.id %}"><button class="badge badge-primary">삭제</button></a>

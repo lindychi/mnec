@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^delete/(?P<todo_id>[^/]+)/$', views.delete, name='todo_delete'),
     url(r'^do/(?P<todo_id>[^/]+)/$', views.do, name='todo_do'),
     url(r'^undo/(?P<todo_id>[^/]+)/$', views.undo, name='todo_undo'),
+    url(r'^delay_enddate/(?P<todo_id>[^/]+)/(?P<day>[^/]+)$', views.delay_enddate, name='todo_delay_enddate'),
 ]
