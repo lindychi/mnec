@@ -41,13 +41,15 @@
           googleCalendarId: 'igam0000@gmail.com',
         },
       ],
-      timeZone: 'UTC',
+      timeZone: 'Asia/Seoul',
       eventClick: function(info) {
         window.location.replace(info.url);
       },
       height: 'auto',
     });
     calendar.render();
+    calendar.next();
+    calendar.today();
   });
 </script>
 
