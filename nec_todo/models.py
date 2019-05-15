@@ -3,6 +3,7 @@ import re
 from django.db import models
 from django.urls import reverse
 from datetime import timedelta,date
+from django.utils.text import Truncator
 
 # Create your models here.
 class Todo(models.Model):
@@ -44,7 +45,7 @@ class Todo(models.Model):
         start_date = self.start_date + timedelta(hours=9)
         end_date = self.end_date + timedelta(hours=9)
         attr_list = []
-        attr_list.append("title:'"+self.title+"'")
+        attr_list.append("title:'"+Truncator(self.title).chars(30)+"'")
         attr_list.append("start:'"+self.get_date_or_time(start_date)+"'")
         if self.end_date is not self.created_date:
             attr_list.append("end:'"+self.get_date_or_time(end_date)+"'")
