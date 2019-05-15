@@ -11,6 +11,6 @@ urlpatterns = [
         kwargs={'template_name': 'nec/login.html'}),
     url(r'^accounts/logout/', auth_views.logout, name='logout',
         kwargs={'next_page': settings.LOGIN_URL}),
-    url(r'^accounts/signup/', views.signup, name='signup'),
+    # url(r'^accounts/signup/', views.signup, name='signup'),
     url(r'^bank/', views.bank, name='bank_index'),
 ]
