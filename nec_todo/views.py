@@ -38,7 +38,7 @@ def list_all(request):
 
 @login_required(login_url=settings.LOGIN_URL)
 def get_event_array(request, daily):
-    if daily:
+    if daily is True:
         todo_list = Todo.objects.filter(owner=request.user)
     else:
         todo_list = Todo.objects.filter(owner=request.user, daily=False)
@@ -49,24 +49,6 @@ def get_event_array(request, daily):
         todo_array.append(todo.get_event())
 
     return ",".join(todo_array)
-
-@login_required(login_url=settings.LOGIN_URL)
-def calendar(request, year, month):
-    c = Calendar(year, month)
-    c.set_url('todo_calendar')
-
-    todo_list = Todo.objects.filter(owner=request.user,
-                                    start_date__lte=c.get_end_datetime())
-    todo_list = todo_list.filter(Q(end_date=F('start_date')) | Q(end_date__gte=c.get_start_datetime()))
-    for todo in todo_list:
-        c.add_event(todo.start_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                    todo.end_date.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                    Truncator(todo.title).chars(30),
-                    reverse('todo_view', args=(todo.title, )),
-                    todo.complete)
-
-    return render(request, 'nec_todo/calendar.html', {'calendar': c, 'todo_list': todo_list})
-
 
 def recent_list(request):
     """Todo recent list page.
