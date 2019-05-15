@@ -168,7 +168,7 @@ def do(request, todo_id):
         new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content,
                         start_date=now.astimezone().strftime('%Y-%m-%d'),
                         end_date=now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                        daily=False, daily_page=todo.daily_page, complete=True)
+                        daily=True, daily_page=todo.daily_page, complete=True)
         new_todo.save()
         next_day = now + timezone.timedelta(days=1)
         todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
