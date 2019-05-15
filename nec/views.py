@@ -36,15 +36,16 @@ def bank(request):
 
 
 def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect(reverse("dashboard"))
-    else:
-        form = UserCreationForm()
-    return render(request, 'nec/signup.html', {'form': form})
+    return redirect(settings.LOGIN_URL)
+    # if request.method == 'POST':
+    #     form = UserCreationForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         username = form.cleaned_data.get('username')
+    #         raw_password = form.cleaned_data.get('password1')
+    #         user = authenticate(username=username, password=raw_password)
+    #         login(request, user)
+    #         return redirect(reverse("dashboard"))
+    # else:
+    #     form = UserCreationForm()
+    # return render(request, 'nec/signup.html', {'form': form})
