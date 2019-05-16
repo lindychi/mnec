@@ -3,7 +3,7 @@
 {% block content %}
   <h3>매일 할 일</h3>
   <a href="{% url 'todo_create_simple' %}"><button class="btn btn-info">할일 추가</button></a>
-  <table width=100%>
+  <table width="inherit">
   {% for daily in daily_list %}
     <tr>
       <td width=120px>
@@ -13,7 +13,7 @@
         <span class="badge badge-info">{{daily.end_date|timeuntil}} 남음</span>
       {% endif %}
       </td>
-      <td width=100%>
+      <td width="inherit" style="word-break:break-all">
       <a href="{% url 'todo_view' daily.title %}">{{ daily.title | truncatechars:30 }}</a>
       </td>
       <td width=200px>
