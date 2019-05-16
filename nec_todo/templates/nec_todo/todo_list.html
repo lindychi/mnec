@@ -6,17 +6,17 @@
   <table width=100%>
   {% for daily in daily_list %}
     <tr>
-      <td>
+      <td width=120px>
       {% if daily.is_past_due %}
         <span class="badge badge-primary">{{daily.end_date|timesince}} 지남</span>
       {% else %}
         <span class="badge badge-info">{{daily.end_date|timeuntil}} 남음</span>
       {% endif %}
       </td>
-      <td>
+      <td width=100%>
       <a href="{% url 'todo_view' daily.title %}">{{ daily.title | truncatechars:30 }}</a>
       </td>
-      <td>
+      <td width=200px>
       <a href="{% url 'todo_delay_enddate' daily.id 1 %}"><button class="badge badge-secondary">+1</button></a>
       <a href="{% url 'todo_delay_enddate' daily.id 7 %}"><button class="badge badge-secondary">+7</button></a>
       <a href="{% url 'todo_edit' daily.id %}"><button class="badge badge-info">수정</button></a>
