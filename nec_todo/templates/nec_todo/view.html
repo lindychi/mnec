@@ -6,7 +6,8 @@
         <h1>{{ todo.title }}</h1>
         상태: <code class="highlight">{% if todo.complete %}완료{% else %}대기중{% endif %}</code>
         {% if not todo.complete %}
-          <a href="{% url 'todo_do' todo.id %}"><button class="btn btn-primary btn-sm">완료 처리</button></a>
+          <a href="{% url 'todo_do' todo.id 0 %}"><button class="btn btn-primary btn-sm">정상 완료 처리</button></a>
+          <a href="{% url 'todo_do' todo.id 1 %}"><button class="btn btn-primary btn-sm">연체 완료 처리</button></a>
         {% else %}
           <a href="{% url 'todo_undo' todo.id %}"><button class="btn btn-primary btn-sm">미완료 처리</button></a>
         {% endif %}</br>
