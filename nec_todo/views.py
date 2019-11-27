@@ -154,7 +154,7 @@ def delete(request, todo_id):
 
 
 @login_required(login_url=settings.LOGIN_URL)
-def do(request, todo_id):
+def do(request, todo_id, update):
     """Do todo object.
 
     if todo.daily is True. todo obect is copy & save with current time
@@ -163,21 +163,26 @@ def do(request, todo_id):
     """
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     now = timezone.now()
-    if todo.daily:
-        now = timezone.now()
-        new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content,
-                        start_date=now.astimezone().strftime('%Y-%m-%d'),
-                        end_date=now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
-                        daily=True, daily_page=todo.daily_page, complete=True)
-        new_todo.save()
-        next_day = now + timezone.timedelta(days=1)
-        todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
-        todo.end_date = next_day.astimezone().strftime('%Y-%m-%d')
-        todo.save()
+    if update == 1:
+        if todo.daily:
+            now = timezone.now()
+            new_todo = Todo(owner=todo.owner, title=todo.title, content=todo.content,
+                            start_date=now.astimezone().strftime('%Y-%m-%d'),
+                            end_date=now.astimezone().strftime('%Y-%m-%d %H:%M:%S'),
+                            daily=False, daily_page=todo.daily_page, complete=True)
+            new_todo.save()
+            next_day = now + timezone.timedelta(days=1)
+            todo.start_date = next_day.astimezone().strftime('%Y-%m-%d')
+            todo.end_date = next_day.astimezone().strftime('%Y-%m-%d')
+            todo.save()
+        else:
+            todo.complete = True
+            todo.end_date = timezone.datetime.now()
+            todo.save()
     else:
         todo.complete = True
-        todo.end_date = timezone.datetime.now()
         todo.save()
+
 
     if todo.daily_page:
         try:
@@ -202,7 +207,6 @@ def undo(request, todo_id):
     todo = Todo.objects.get(id=int(todo_id), owner=request.user)
     now = timezone.now()
     todo.complete = False
-    todo.end_date = todo.start_date
     todo.save()
 
     if todo.daily_page:
