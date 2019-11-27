@@ -38,7 +38,7 @@
       },
       googleCalendarApiKey: 'AIzaSyB3VSuQOHp1VRz-JA2RYMEz5S8Cp5lpAkc',
       events: [
-                {{ todo_list | safe }},
+                {{ todo_list | safe }}{% if todo_list %},{% endif %}
               ],
       eventSources: [
         {
