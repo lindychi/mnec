@@ -10,7 +10,7 @@ from django.urls import reverse
 class Money(models.Model):
     """For my account book."""
 
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     bank = models.TextField()
     category = models.CharField(max_length=1024)
     title = models.CharField(max_length=1024)

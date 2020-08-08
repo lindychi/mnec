@@ -6,7 +6,7 @@ from django.urls import reverse
 
 # Create your models here.
 class Todo(models.Model):
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=1024)
     content = models.TextField(blank=True)
     created_date = models.DateTimeField(auto_now_add=True)

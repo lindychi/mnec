@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.urls import path
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -23,4 +24,5 @@ urlpatterns = [
     url(r'^calendar/', include('nec_calendar.urls')),
     url(r'^bank/', include('nec_bank.urls')),
     url(r'', include('nec.urls')),
+    path(r'project/', include('project.urls')),
 ]

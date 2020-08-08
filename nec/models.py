@@ -7,7 +7,7 @@ from django.utils import timezone
 class BucketList(models.Model):
     """Start with BucketList. but now we do not use it."""
 
-    author = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)
     created_date = models.DateTimeField()
@@ -24,7 +24,7 @@ class BucketList(models.Model):
 class MoneyUnit(models.Model):
     """For my account book."""
 
-    author = models.ForeignKey('auth.User')
+    author = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     category = models.CharField(max_length=1024)
     title = models.CharField(max_length=1024)
     text = models.TextField(null=True)

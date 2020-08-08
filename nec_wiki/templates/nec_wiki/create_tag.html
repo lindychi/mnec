@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
 <form method="post" action="{% url 'wiki_create_tag' request.user.username %}">

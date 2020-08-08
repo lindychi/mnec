@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load project_tags %}
+{% load static %}
+
+{% block css %}
+{% comment %} <link rel="stylesheet" href="tree_fontello/css/fontello.css"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'css/tree.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if object.todo %}
+<h2>프로젝트 트리 {{ total_clear_count }}/{{ total_child_count }}</h2>
+<ul class="tree">
+    <li>
+        <input type="checkbox" checked="checked" id="todo_{{ object.todo.id }}" />
+        {% if object.todo.child.count > 0 %}
+        <label class="tree_label" for="todo_{{ object.todo.id }}">{{ object.todo.title }}</label>
+        {% else %}
+        <span class="tree_label">{{ object.todo.title }}</label> 
+        {% endif %}
+        <a href="{% url 'project:create_projecttodo' object.id object.todo.id %}">+</a>
+        {% show_childs object.todo %}
+    </li>
+</ul> 
+{% endif %}
+
+<h2>클리어 로그</h2>
+{% for c in child_clear_log %}
+<div>
+{{ c.clear_date|date }} - {{ c.title }} 완료
+</div>
+{% endfor %}
+{% endblock %}

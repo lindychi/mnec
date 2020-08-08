@@ -5,8 +5,9 @@ from django.conf import settings
 from .models import MoneyUnit, BucketList
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from nec_todo.models import Todo
+from django.views.generic.edit import CreateView
 
 
 def dashboard(request):
@@ -34,6 +35,10 @@ def bank(request):
     else:
         return redirect(settings.LOGIN_URL)
 
+
+class SignupView(CreateView):
+    template_name = 'registration/signup.html'
+    success_url = reverse_lazy('index')
 
 def signup(request):
     if request.method == 'POST':

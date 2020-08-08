@@ -1,0 +1,38 @@
+{% load project_tags %}
+
+<ul class="tree">
+{% for child in childs %}
+    <li>
+        {% if child.child.count > 0 %}
+        <input type="checkbox" checked="checked" id="todo_{{ child.id }}" />
+        {% endif %}
+        {% if child.is_clear %}
+        <strike style="color:gray">
+        {% endif %}
+        {% if child.child.count > 0 %}
+        <label class="tree_label" for="todo_{{ child.id }}">{{ child.title }}</label>
+        {% else %}
+        <span class="tree_label">{{ child.title }}</span>
+        {% endif %}
+        <a href="{% url 'project:clear_projecttodo' child.id %}">
+        {% if child.is_clear %}
+        [O]
+        {% else %}
+        [X]
+        {% endif %}
+        </a>
+        <a href="{% url 'project:edit_projecttodo' child.id %}">E</a>
+        <a href="{% url 'project:create_projecttodo' child.project.id child.id %}">+</a>
+        <a href="{% url 'project:delete_projecttodo' child.id %}">X</a>
+        {% if child.is_clear %}
+        </strike>
+        {% endif %}
+        {% if child.detail|length > 0 and not child.is_clear %}
+        </br><h6>{{ child.detail }}</h6>
+        {% endif %}
+        {% if child.child.count > 0 %}
+        {% show_childs child %}
+        {% endif %}
+    </li>
+{% endfor %}
+</ul>

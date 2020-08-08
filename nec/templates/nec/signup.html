@@ -4,7 +4,7 @@
   <h2>회원가입</h2>
   <form method="post">
     {% csrf_token %}
-    {% include 'includes/model_form.html' with form=form %}
+    {{ form }}
     <button type="submit" class="btn btn-primary">회원가입</button>
   </form>
 {% endblock %}

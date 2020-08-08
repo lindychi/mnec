@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+  PROJECT list
+  <a href={% url 'project:create_project' %}>+ 새 프로젝트 추가</a>
+  {% for project in object_list %}
+  <a href={% url 'project:detail_project' project.id %}><h5>{{ project }}</h5></a>
+  {% endfor %}
+  </div>
+{% endblock %}

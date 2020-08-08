@@ -6,7 +6,7 @@ import re
 
 class Tag(models.Model):
     name = models.CharField(max_length=64)
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     update_date = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.owner.username + " - " + self.name
@@ -16,7 +16,7 @@ class Tag(models.Model):
 
 
 class Page(models.Model):
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     title = models.CharField(max_length=1024)
     content = models.TextField(blank=True)
     todo_log = models.TextField(blank=True)
