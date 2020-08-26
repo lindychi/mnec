@@ -9,6 +9,10 @@ python = "^3.8"
 django = "^3.0.9"
 django-widget-tweaks = "^1.4.8"
 markdown = "^3.2.2"
+requests = "^2.24.0"
+bs4 = "^0.0.1"
+selenium = "^3.141.0"
+django-mathfilters = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 

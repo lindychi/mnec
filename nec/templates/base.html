@@ -81,6 +81,10 @@
               <a class="nav-link {% block project_active %}{% endblock %}" href="{% url 'project:index' %}">프로젝트</a>
               {% block project_inner %}{% endblock %}
             </li>
+            <li class="collection-header ">
+              <a class="nav-link {% block store_active %}{% endblock %}" href="{% url 'store:index' %}">오토스토어 관리</a>
+              {% block store_inner %}{% endblock %}
+            </li>
           </ul>
         </div>
       </nav>
@@ -95,6 +99,9 @@
   </div>
 </div>
 
+    <div>
+    <h1>임시 푸터 몰아내기</h1>
+    </div>
     <!-- Compiled and minified JavaScript -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

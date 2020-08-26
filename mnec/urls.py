@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^bank/', include('nec_bank.urls')),
     url(r'', include('nec.urls')),
     path(r'project/', include('project.urls')),
+    path(r'store/', include('store.urls')),
 ]

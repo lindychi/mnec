@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+
+{% block content %}
+{% if soldout_list %}
+<div>
+품절 리스트
+<a href="{% url 'store:clear_soldout' %}">품절 물건 제거<a/>
+<table class="table table-hover">
+  <tr>
+    <th scope="col">도매매 번호</th>
+    <th scope="col">스토어 번호</th>
+    <th scope="col">물건 이름</th>
+    <th scope="col">물건 가격</th>
+    <th scope="col">물건 상태</th>
+  </tr>
+{% for soldout in soldout_list %}
+  <tr>
+    <td><a href="http://domeme.domeggook.com/s/{{ soldout.domeme_id }}">{{ soldout.domeme_id }}</a></td>
+    <td><a href="https://sell.smartstore.naver.com/#/products/edit/{{ soldout.naver_edit_id }}">{{ soldout.store_no }}</a></td>
+    <td>{{ soldout.name }}</td>
+    <td>{{ soldout.price }}</td>
+    <td>{{ soldout.domeme_status }}</td>
+  </tr>
+</table>
+{% endfor %}
+{% endif %}
+<div>
+  아이템 리스트 ({{ item_list.count }}개)
+  <a href={% url 'store:create_item' %}>+ 새 아이템 추가</a> <a href={% url 'store:delete_duplicate_item' %}>중복 아이템 제거</a>
+  <div>
+    <a href={% url 'store:refresh_oldest' %}>오래된 아이템부터 전부 갱신</a>
+  </div>
+  <div>
+    <span>
+      <a href="{% url 'store:load_naver_data_limit' 200 %}">최신 네이버 아이템 리스트 가져오기(200개 이하)<a></br>
+      <a href="{% url 'store:load_naver_data' %}">네이버 아이템 리스트 가져오기<a>
+    </span>
+    <span>
+      <a href="{% url 'store:load_domeme_data' %}">도매매 가격 리스트 가져오기<a>
+    </span>
+  </div>
+  <table class="table table-hover">
+    <tr>
+      <th scope="col">
+        네이버 아이디 <a href="{% url 'store:refresh_unset_naver_edit_id' %}">수정 아이디 갱신 ({{ unset_naver_edit_id.count }}건)</a>
+      </th>
+      <th scope="col">
+        도매매 아이디
+      </th>
+      <th scope="col">
+        카테고리 점수 <a href="{% url 'store:index_order_by_category_score' %}">정렬</a></br>
+        <a href={% url 'store:check_tag' %}>태그 확인 및 갱신</a>
+      </th>
+      <th scope="col">
+        상품명 <a href="{% url 'store:title_replace_view' %}">상품명 치환</a>
+        <form action="{% url 'store:title_replace_with_search' %}" method="POST">
+          {% csrf_token %}
+          <input type="text" name="search_text">
+          <input type="submit" value="치환">
+        </form>
+      </th>
+      <th scope="col">
+        도매매 가격
+      </th>
+      <th scope="col">
+        네이버 가격 <a href="{% url 'store:load_naver_price' %}">갱신</a>
+      </th>
+      <th scope="col">
+        네이버 세일가<br>
+        <a href="{% url 'store:refresh_unset_naver_sale_price' %}">비지정 대상 갱신({{unset_sale_count}}건)</a>
+      </th>
+      <th scope="col">
+        마진율 <br>
+        <a href="{% url 'store:refresh_uncorrect_margin' %}"><10% 갱신</a>
+        <a href="{% url 'store:refresh_uncorrect_upper_margin' %}">>25% 갱신({{uncorrect_upper_margin.count}}건)</a>
+      </th>
+      <th scope="col">
+        갱신<br>
+        <a href="{% url 'store:refresh_minimum_count_list' %}">최소 수량 변경분</a>
+      </th>
+    </tr>
+  {% for item in item_list %}
+    <tr>
+      <td>
+        {% if item.naver_edit_id >= 0 %}
+          <a href="https://sell.smartstore.naver.com/#/products/edit/{{ item.naver_edit_id }}">
+            {{ item.naver_id }}
+          </a>
+        {% else %}
+          {{ item.naver_id }}
+        {% endif %}
+      </td>
+      <td>
+        <a href="http://domeme.domeggook.com/s/{{item.domeme_id}}">{{ item.domeme_id }}</a>
+      </td>
+      <td>
+        {{ item.category_score }}
+      </td>
+      <td>
+        <a href={% url 'store:detail_item' item.id %}><h5>{{ item.title }}</h5></a>
+      </td>
+      <td>
+        {{ item.domeme_price|mul:item.minimum_count|floatformat:"0" }}원
+      </td>
+      <td>
+        {{ item.naver_price|sub:item.naver_sale|floatformat:"0" }}원({{ item.naver_price|floatformat:"0" }}원)
+      </td>
+      <td>
+        {{ item.naver_sale|floatformat:"0" }}원
+      </td>
+      <td>
+        {{ item.margin_ratio|floatformat:"2" }}%
+      </td>
+      <td>
+        <a href="{% url 'store:refresh_item' item.id %}">수치 갱신</a>
+      </td>
+    </tr>
+  {% endfor %}
+  </table>
+</div>
+{% endblock %}

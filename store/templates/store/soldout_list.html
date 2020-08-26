@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+품절 리스트
+{{ soldout_list }}
+</div>
+<div>
+  아이템 리스트
+  <a href={% url 'project:create_project' %}>+ 새 아이템 추가</a>
+  {% for project in object_list %}
+  <a href={% url 'project:detail_project' project.id %}><h5>{{ project }}</h5></a>
+  {% endfor %}
+</div>
+{% endblock %}

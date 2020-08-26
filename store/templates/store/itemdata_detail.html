@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load project_tags %}
+{% load static %}
+
+{% block css %}
+{% comment %} <link rel="stylesheet" href="tree_fontello/css/fontello.css"> {% endcomment %}
+<link rel="stylesheet" href="{% static 'css/tree.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if itemdata %}
+<h1>{{ itemdata.title }}</h1>
+<div>
+    네이버 링크:
+    {% if itemdata.naver_edit_id >= 0 %}
+    <a href="https://sell.smartstore.naver.com/#/products/edit/{{ itemdata.naver_edit_id }}">
+        {{ itemdata.naver_id }}
+    </a>
+    {% else %}
+    {{ itemdata.naver_id }}
+    {% endif %}
+</div>
+<div>
+    도매매 링크:
+    <a href="http://domeme.domeggook.com/s/{{ itemdata.domeme_id }}">{{ itemdata.domeme_id }}</a>
+</div>
+<div>
+    현재 카테고리 점수: {{ itemdata.category_score }}
+</div>
+<div>
+    현재 카테고리: {{ itemdata.category_current }}
+</div>
+<div>
+    추천 카테고리: {{ itemdata.category_recommand }}
+</div>
+{% else %}
+{{ domemedata }}
+{% endif %}
+{% endblock %}
