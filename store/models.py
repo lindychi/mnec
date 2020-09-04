@@ -45,7 +45,11 @@ class ItemData(models.Model):
     category_current = models.CharField(max_length=255, default='')
     category_score = models.IntegerField(default=99999)
     category_recommand = models.CharField(max_length=255, default='')
-    
+
+    detail_page = models.IntegerField(default=-1)
+    search_tag = models.CharField(max_length=1024, default='')
+    search_tag_list = models.CharField(max_length=2048, default='')
+
     price_state = models.IntegerField(default=0)
     margin_ratio = models.FloatField(default=0.0)
 
@@ -127,33 +131,6 @@ class ItemData(models.Model):
         self.set_margin_ratio()
         self.modify_date = timezone.now()
         self.save()
-
-    def get_dict(self):
-        item_dict = {}
-        item_dict['user'] = self.user
-        item_dict['title'] = self.title
-        item_dict['domeme_id'] = self.domeme_id
-        item_dict['domeme_price'] = self.domeme_price
-        item_dict['domeme_row_price'] = self.domeme_row_price
-        item_dict['domeme_update_count'] = self.domeme_update_count
-
-        item_dict['naver_id'] = self.naver_id
-        item_dict['naver_edit_id'] = self.naver_edit_id
-        item_dict['naver_price'] = self.naver_price
-        item_dict['naver_sale'] = self.naver_sale
-        item_dict['naver_discounted_price'] = self.naver_discounted_price
-        item_dict['create_date'] = self.create_date
-        item_dict['modify_date'] = self.modify_date
-        
-        item_dict['category_score'] = self.category_score
-        item_dict['category_current'] = self.category_current
-        item_dict['category_recommand'] = self.category_recommand
-        
-        item_dict['price_state'] = self.price_state
-        item_dict['margin_ratio'] = self.margin_ratio
-
-        item_dict['minimum_count'] = self.minimum_count
-        return item_dict
     
     def save(self, *args, **kwargs):
         self.modify_date = timezone.now()
