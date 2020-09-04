@@ -15,6 +15,7 @@ class ItemDataManager(models.Manager):
                                    create_date=timezone.now())
         except:
             print("create 실패 domeme:"+str(dict['domeme_id'])+" naver:"+str(dict['naver_id']))
+            itemdata = None
         return itemdata
 
 class TitleReplace(models.Model):
@@ -54,6 +55,9 @@ class ItemData(models.Model):
 
     def set_item_info(self, item_info):
         if item_info:
+            if 'naver_id' in item_info and int(item_info['naver_id']) > 0 and self.naver_id != int(item_info['naver_id']):
+                print("네이버 아이디 업데이트 : "+str(item_info['naver_id'])+" -> "+str(item_info['naver_id']))
+                self.naver_id = int(item_info['naver_id'])
             if 'category_score' in item_info and item_info['category_score']:
                 print("카테고리 정보 업데이트 : "+str(item_info['category_score'])+" ** "+str(item_info['category_recommand']))
                 self.category_score = int(item_info['category_score'])

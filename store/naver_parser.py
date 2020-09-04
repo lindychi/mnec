@@ -1,16 +1,20 @@
 import sys
 import time
 import random
+from pygame import mixer
 from contextlib import suppress
 from selenium import webdriver
+from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException, TimeoutException
 from bs4 import BeautifulSoup as bs
+from selenium.webdriver.common.keys import Keys
 
 class Naver:
     driver = None
+    mixer = None
 
     url_state = -1
     url_edit_id = -1
@@ -36,14 +40,40 @@ class Naver:
         url_state = state
         url_edit_id = edit_id
 
+    def driver_get(self, page_url, depth=0, sleep_time=3):
+        naver_depth_print(str(page_url)+" 주소로 페이지 이동 시도")
+        return_value = True
+        try:
+            if page_url == self.driver.current_url:
+                self.driver.refresh()
+            else:
+                self.driver.get(page_url)
+        except TimeoutException:
+            print("네이버 페이지 타임 아웃 발생")
+            # self.driver.send_keys(Keys.ESCAPE)
+            return_value = False
+        except UnexpectedAlertPresentException:
+            # 아래의 swtich_to.alert에서 아직 alert창을 찾지못해서 NoAlertPresentException이 발생함
+            # 해결하기위해서 WebDriverWait을 사용해서 alert창을 기다려보기로 함
+            self.check_alert_and_accept(depth=depth+1)
+            self.driver.get(page_url)
+        self.rand_sleep(default=sleep_time)
+        return return_value
+
     def naver_login(self, depth=0):
-        self.driver = webdriver.Chrome(r'C:\Users\한치\mnec\store\chromedriver')
+        naver_depth_print("로그인 시도")
+        self.options = webdriver.ChromeOptions()
+        self.options.add_argument('--ignore-certificate-errors')
+        self.options.add_argument('--ignore-ssl-errors')
+        # self.options.page_load_strategy = 'eager'
+        self.driver = webdriver.Chrome(r'C:\Users\한치\mnec\store\chromedriver', chrome_options=self.options)
+        # self.driver = webdriver.Chrome(r'C:\Users\한치\mnec\store\chromedriver')
         # self.driver.DesiredCapabilities.Chrome["unexpectedAlertBehaviour"] = "accept"
         # driver = webdriver.PhantomJS('C:\Users\한치\mnec\store\phantomjs')
         position = self.driver.get_window_position() # returns {'y', 'x'} coordinates
         self.driver.set_window_position(position['x'] + 1280, position['y'])
 
-        self.driver.get(self.LOGIN_URL)
+        self.driver_get(self.LOGIN_URL)
         self.set_url_state(self.STATE_LOGIN_PAGE)
         self.rand_sleep()
         self.driver_find_xpath(self.LOGIN_NAVER_ID_LOGIN_BUTTON_XPATH).click()
@@ -55,51 +85,164 @@ class Naver:
         self.driver_find_xpath(self.LOGIN_BUTTON_XPATH).click()
         self.rand_sleep()
 
-    def set_recommand_category(self, item_dict, depth=0):
-        naver_depth_print("set_recommand_category 콜", depth=depth+1)
-        result = True
-        (temp_result, item_dict) = self.goto_item_page(item_dict, depth=0)
-        result = result and temp_result
-        
-        category_list = item_dict['category_recommand'].split('>')
-        category_score = format(int(item_dict['category_score']), "04d")
+    def search_with_domeme_id(self, item_dict, depth=0):
+        naver_depth_print("get_naver_id_from_domeme_id call (domeme_id:"+str(item_dict['domeme_id'])+")", depth=depth+1)
+        self.goto_product_list(depth=depth+1)
+        self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[1]/div[2]/form/div[1]/div/ul/li[1]/div/div/div[1]/div/div[2]/label/input', target_name='판매자상품코드 라디오 버튼', depth=depth+1)
+        self.send_element(self.driver_find_xpath(self.ORIGIN_ITEM_ID_TEXTAREA_XPATH), str(item_dict['domeme_id']), "도매매 아이템 번호 "+str(item_dict['domeme_id']), depth=depth+1)
+        self.js_click_with_xpath(self.ORIGIN_ITEM_SEARCH_BUTTON_XPATH, target_name="아이템 검색 버튼", depth=depth+1)
+
+    def get_naver_id_from_domeme_id(self, item_dict, depth=0):
+        self.search_with_domeme_id(item_dict, depth=depth+1)
+        naver_ids = self.selectStorefarmChannelProductNoInOriginList()
+        assert len(naver_ids) > 0
+        naver_depth_print("최상단 네이버 상품 번호: "+str(naver_ids[0]))
+        item_dict['naver_id'] = naver_ids[0]
+
+    def set_main_category(self, item_dict, depth=0):
+        new_item_dict = item_dict.copy()
+
+        assert new_item_dict is not item_dict
+
+        self.search_item(new_item_dict)
+        result = False
+        while not result:
+            no_data_element = self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[2]/div[1]/div[2]/div[3]/div/div/div/div/div[6]/div/div/div/p', depth=depth+1)
+            if no_data_element and no_data_element.text == "데이터가 존재하지 않습니다.":
+                naver_depth_print("삭제된 아이템 복사 중단", depth=depth+1)
+                break
+            copy_button_element = self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[2]/div[1]/div[2]/div[3]/div/div/div/div/div[3]/div[1]/div[1]/div[3]/span/button', depth=depth+1, target_name="복사 버튼")
+            if copy_button_element:
+                result = True
+                self.js_click(copy_button_element, '복사 버튼', depth=depth+1)
+                self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div/button'), "KC인증 확인 버튼", depth=depth+1)
+
+        # 복사 버튼 클릭 성공
+        if result == True:
+            new_item_dict['naver_edit_id'] = self.get_edit_id_from_url()
+            self.js_click_with_xpath('//*[@id="productForm"]/ng-include/ui-view[3]/div/div[2]/div/div/div/category-search/div[1]/div[1]/div/label[2]', target_name='카테고리명 선택', depth=depth+1)
+            (result, new_item_dict) = self.set_category_in_item_page(new_item_dict, depth=depth+1, start_index=0)
+            if result == 1:
+                naver_depth_print("원본 아이템 제거", depth=depth+1)
+                self.save_item_page(depth=depth+1, try_count=5)
+
+                cert_category = self.driver_find_xpath('/html/body/div[1]/div/div/div[2]/div[2]/strong', target_name='인증 필수 카테고리', depth=depth+1)
+                if cert_category:
+                    naver_depth_print("인증 실패로 관련 아이템 전체 제거", depth=depth+1)
+                    return (-1, new_item_dict)
+                else:
+                    self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[2]/div[1]/div[2]/div[1]/div[1]/div/div[1]/button', target_name='선택 삭제', depth=depth+1)
+                    self.js_click_with_xpath('/html/body/div[1]/div/div/div[2]/div/span[2]/button', target_name='삭제 확인', depth=depth+1)
+                    self.js_click_with_xpath('/html/body/div[1]/div/div/div[1]/button', target_name='일괄변경 결과 닫기', depth=depth+1)
+                    self.get_naver_id_from_domeme_id(new_item_dict, depth=depth+1)
+                return (True, new_item_dict)
+            elif result == -1:
+                naver_depth_print("관련 아이템 전체 제거", depth=depth+1)
+                return (result, new_item_dict)
+            else:
+                new_item_dict = None
+                self.cancel_item_page(depth=depth+1)
+                return (0, new_item_dict)
+        else:
+            new_item_dict = None
+            return (0, new_item_dict)
+
+    def set_category_in_item_page_with_data(self, score_str, category_str, start_index=1, depth=0):
+        recommand_category_string = category_str.split('>')
+        category_score = format(int(score_str), "04d")
 
         modify = False
-        for index in range(len(category_list)):
-            if index == 0:
+        for index in range(4):
+            if index < start_index:
                 continue #대분류는 복사해서 새로 생성해야함
+            elif len(recommand_category_string) < index + 1:
+                category_tab = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[3]/div/div[2]/div/div[1]/div/category-search/div[3]/div['+str(index+1)+']/ul', target_name=(str(index+1)+"번째 분류탭"), try_count=5, depth=depth+1)
+                tab_category_elements = category_tab.find_elements(By.TAG_NAME, 'a')
+                if len(tab_category_elements) == 1 and tab_category_elements[0].text == '세분류':
+                    return 1
+                else:
+                    return 0
             else:
                 # 상위 분류가 변경되면 하위도 새로 세팅해야되는 경우가 대부분임. 
                 # 세팅을 시작했으면 하위도 다 세팅함.
                 if int(category_score[index]) > 0 or modify: 
                     modify = True
-                    category_tab = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[3]/div/div[2]/div/div[1]/div/category-search/div[3]/div['+str(index+1)+']/ul', target_name=(str(index+1)+"번째 분류탭"), try_count=5)
+                    category_tab = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[3]/div/div[2]/div/div[1]/div/category-search/div[3]/div['+str(index+1)+']/ul', target_name=(str(index+1)+"번째 분류탭"), try_count=5, depth=depth+1)
                     tab_category_elements = category_tab.find_elements(By.TAG_NAME, 'a')
                     for e in tab_category_elements:
-                        if e.text == category_list[index]:
-                            self.js_click(e, str(index+1)+"번째 탭의 "+e.text+" 카테고리")
-        
-        self.get_category_data_list(item_dict, depth=depth+1)
+                        if e.text == recommand_category_string[index]:
+                            self.js_click(e, str(index+1)+"번째 탭의 "+e.text+" 카테고리", depth=depth+1)
+            category_permission = self.driver_find_xpath('/html/body/div/div/div/div[1]/p[2]/strong', target_name='카테고리 등록권한창', try_count=5, depth=depth+1)
+            if category_permission:
+                print(category_permission.text)
+            if category_permission:
+                self.js_click_with_xpath('/html/body/div/div/div/div[1]/button/span', target_name='권한창 닫기', depth=depth+1)
+                self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div[3]/div[2]/div[2]/button', target_name='취소 버튼', depth=depth+1)
+                self.check_alert_and_accept(depth=depth+1)
+                return -1
+        return 1
 
-        if item_dict['naver_category'] and item_dict['category_recommand'] == ">".join(item_dict['naver_category']):
-            naver_depth_print("소분류 카테고리 업데이트 성공", depth=depth+1)
-            item_dict['category_current'] = item_dict['category_recommand']
-            item_dict['category_score'] = 0
+    def driver_get_text_with_xpath(target, target_name='', try_count=1, depth=0):
+        element = self.driver_find_xpath(target, target_name=target_name, try_count=try_count, depth=depth+1)
+        if element:
+            return element.text
         else:
-            naver_depth_print("소분류 카테고리 업데이트 실패", depth=depth+1)
-            
-        self.save_item_page(depth=depth+1)
-        return (result, item_dict)
+            return ''
+
+    def set_category_in_item_page(self, item_dict, depth=0, start_index=1):
+        naver_depth_print("set_category_in_item_page call", depth=depth+1)
+
+        result = self.set_category_in_item_page_with_data(item_dict['category_score'], item_dict['category_recommand'], start_index=start_index, depth=depth+1)
+        if result == 1:
+            naver_depth_print("추천 카테고리 성공", depth=depth+1)
+            item_dict['category_score'] = 0
+            item_dict['category_current'] = item_dict['category_recommand']
+            return (1, item_dict)
+        else:
+            naver_depth_print("추천 카테고리 실패 ("+str(result)+")", depth=depth+1)
+            if result == -1:
+                return (-1, None)
+                    
+        for category in item_dict['category_list']:
+            if category == item_dict['category_recommand']:
+                naver_depth_print('추천 카테고리로 사용됨', depth=depth+1)
+                continue
+            else:
+                result = self.set_category_in_item_page_with_data("9999", category, start_index=start_index, depth=depth+1)
+                if result == 1:
+                    item_dict['category_score'] = 0
+                    item_dict['category_current'] = category
+                    return (1, item_dict)
+                else:
+                    naver_depth_print("카테고리 실패 ("+str(result)+")", depth=depth+1)
+                    if result == -1:
+                        return (-1, None)
+        return (0, None)                
+
+    def set_recommand_category(self, item_dict, depth=0):
+        naver_depth_print("set_recommand_category 콜", depth=depth+1)
+        result = True
+        (temp_result, item_dict) = self.goto_item_page(item_dict, depth=0)
+        result = result and temp_result
+
+        if item_dict and self.set_category_in_item_page(item_dict, depth=depth+1, start_index=1) == 1:          
+            self.get_category_data_list(item_dict, depth=depth+1)
+            self.save_item_page(depth=depth+1)
+            return (result, item_dict)
+        else:
+            return (False, None)
 
     def get_category_data_list(self, item_dict, depth=0):
+        naver_depth_print('get_category_data_list call', depth=depth+1)
         category_strong_element = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[3]/div/div[2]/div/div[1]/div/p[1]/strong', try_count=10)
         if category_strong_element:
-            naver_depth_print(category_strong_element.text, depth=depth+1)
+            #naver_depth_print(category_strong_element.text, depth=depth+1)
             category_list = category_strong_element.text.split('>')
-            naver_depth_print(str(category_list), depth=depth+1)
+            #naver_depth_print(str(category_list), depth=depth+1)
             item_dict['naver_category'] = category_list
         else:
             item_dict['naver_category'] = None
+        naver_depth_print('get_category_data_list result: '+str(item_dict['naver_category']), depth=depth+1)
 
     def get_category(self, item_dict, depth=0, with_save=True):
         naver_depth_print("get_category 콜", depth=depth+1)
@@ -107,11 +250,12 @@ class Naver:
         (temp_result, item_dict) = self.goto_item_page(item_dict, depth=depth+1)
         result = result and temp_result
 
-        if result:
+        if result and item_dict:
             self.get_category_data_list(item_dict, depth=depth+1)
             if with_save:
                 self.save_item_page(depth=depth+1)
 
+        naver_depth_print("get_category result: "+str((True, item_dict)), depth=depth+1)
         return (True, item_dict)
 
     def get_item_list(self, depth=0, load_page=0, load_count=0):
@@ -333,30 +477,34 @@ class Naver:
             i = i + 1
         f.close()
 
-    def check_alert_and_accept(self, depth=0):
+    def check_alert_and_accept(self, depth=0, result=True):
         naver_depth_print("check_alert_and_accept", depth=depth+1)
         try:
-            WebDriverWait(self.driver, 3).until(EC.alert_is_present())
-            alert=driver.switch_to_alert()
-            alert.accept()
+            WebDriverWait(self.driver, 5).until(EC.alert_is_present())
+            alert = Alert(self.driver)
+            if alert:
+                if result:
+                    alert.accept()
+                else:
+                    alert.dismiss()
         # except TimeoutException:
         #     naver_depth_print('wrong value in row . Please check the value', depth=depth+1)
         # except NoAlertPresentException:     
         #     naver_depth_print('alert is not present yet, waiting for some time', depth=depth+1)
         except:
-            naver_depth_print("Unexpected error:"+str(sys.exc_info()[0]), depth=depth+1)
+            naver_depth_print("Unexpected error: " + str(sys.exc_info()[0]), depth=depth+1)
 
 
     def goto_product_list(self, depth=0):
         naver_depth_print("리스트 페이지로 이동", depth=depth+1)
         result = False
         while not result:
-            with suppress(UnexpectedAlertPresentException): self.driver.get('https://sell.smartstore.naver.com/#/products/origin-list')
+            with suppress(UnexpectedAlertPresentException): self.driver_get('https://sell.smartstore.naver.com/#/products/origin-list')
             self.check_alert_and_accept(depth=depth+1)
             naver_depth_print("페이지 종료시 알람 끄기", depth=depth+1)
             if self.js_click(self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[1]/div[1]/ul/li[1]/a', "전체 물건 버튼", depth=depth+1, try_count=10), "전체 물건 버튼", depth=depth+1):
                 result = True
-        self.rand_sleep(default=0.5)
+        self.rand_sleep()
 
     def get_soup(self):
         return bs(self.driver.page_source, 'html.parser')
@@ -428,11 +576,13 @@ class Naver:
     
     def save_item_page(self, depth=0, try_count=1):
         naver_depth_print("save_item_page 호출", depth=depth+1)
-        cur_url = self.driver.current_url
-        while cur_url == self.driver.current_url:
-            self.js_click(self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div[3]/div[2]/div[1]/button[2]', depth=depth+1), "저장하기 버튼", depth=depth+1)
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div[1]/button[1]', depth=depth+1, try_count=try_count), "상품속성 다음에 할래요 버튼", depth=depth+1)
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[2]/div/button[2]', depth=depth+1, try_count=try_count), "아이템 리스트 보기 버튼", depth=depth+1)
+        self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div[3]/div[2]/div[1]/button[2]', target_name="저장하기 버튼", depth=depth+1)
+        self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div[1]/button[1]', depth=depth+1, try_count=try_count), "상품속성 다음에 할래요 버튼", depth=depth+1)
+        self.js_click_with_xpath('/html/body/div[1]/div/div/div[2]/div/button[2]', depth=depth+1, target_name="아이템 리스트 보기 버튼", try_count=try_count)
+        child_warning = self.driver_find_xpath('//*[@id="error-certificationInfo_CHILD_CERTIFICATION0"]/p')
+        # if child_warning:
+        #     tts.execute('경고. 어린이 안전 관련 사항이 필요한 아이템')
+            
 
     def set_new_title(self, item_info, depth=0):
         naver_depth_print("set_new_title 호출 ("+str(item_info)+")", depth+1)
@@ -443,6 +593,13 @@ class Naver:
         else:
             naver_depth_print("페이지 이동 실패로 취소", depth+1)
         return (result, item_info)
+
+    def delete_item_with_domeme_id(self, item_dict, depth=0):
+        self.search_with_domeme_id(item_dict, depth=depth+1)
+        self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[2]/div[1]/div[2]/div[3]/div/div/div/div/div[1]/div[1]/div/div[1]/div[2]/div/label/input', target_name="리스트 전체 선택 라디오", depth=depth+1)
+        self.js_click_with_xpath('//*[@id="seller-content"]/ui-view/div/ui-view[2]/div[1]/div[2]/div[1]/div[1]/div/div[1]/button', target_name='선택 삭제', depth=depth+1)
+        self.js_click_with_xpath('/html/body/div[1]/div/div/div[2]/div/span[2]/button', target_name='삭제 확인', depth=depth+1)
+        self.js_click_with_xpath('/html/body/div[1]/div/div/div[1]/button', target_name='일괄변경 결과 닫기', depth=depth+1)
 
     def get_item_info(self, item_info, depth=0):
         self.search_item(item_info)
@@ -509,29 +666,51 @@ class Naver:
     def goto_item_page(self, item_info, with_search=True, depth=0):
         result = True
 
+        if not item_info:
+            return (False, None)
+
         naver_depth_print("goto_item_page 콜", depth+1)
         
         # 현재 페이지가 해당 페이지 일 경우에 이동하지 않음.
         if self.url_state != self.STATE_EDIT_PAGE or self.url_edit_id != int(item_info['naver_edit_id']):
-            if int(item_info['naver_edit_id']) != -1:
+            if item_info and 'naver_edit_id' in item_info and int(item_info['naver_edit_id']) != -1:
                 naver_depth_print("naver_edit_id("+str(item_info['naver_edit_id'])+")가 존재해서 직접 이동", depth+1)
-                self.driver.get('https://sell.smartstore.naver.com/#/products/edit/'+str(item_info['naver_edit_id']))
 
                 page_check = False
-
+                count = 3
                 # 페이지가 정상적인지 혹은 페이지가 삭제되었는지 체크하기위해 사용
                 while not page_check:
-                    deleted_alert_element = self.driver_find_xpath('/html/body/div[1]/div/div/div[1]/p[2]', '삭제된 아이템 알림창')
+                    self.driver_get('https://sell.smartstore.naver.com/#/products/edit/'+str(item_info['naver_edit_id']), depth=depth+1, sleep_time=count)
+                    if count > 5:
+                        if not self.mixer:
+                            self.mixer = mixer.init()
+                        self.mixer.music.load(r'C:\Users\한치\mnec\store\static\error_sound\아이템페이지획득실패.mp3')
+                        self.mixer.music.play()
+                    deleted_alert_element = self.driver_find_xpath('/html/body/div[1]/div/div/div[1]/p[2]', '삭제된 아이템 알림창1', depth=depth+1)
                     if deleted_alert_element and deleted_alert_element.text == '삭제된 상품입니다.':
                         item_info = None
                         result = False
+                        self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[2]/div/span/button', target_name="삭제된 상품 확인 버튼", depth=depth+1), "삭제된 상품 확인 버튼", depth=depth+1)
                         break
-                    self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div/button'), "KC인증 확인 버튼", depth=depth+1)
+                    deleted_alert_element = self.driver_find_xpath('//*[@id="syno-nsc-ext-gen3"]/div[1]/div/div/div[1]/p[2]', '삭제된 아이템 알림창2', depth=depth+1)
+                    if deleted_alert_element and deleted_alert_element.text == '삭제된 상품입니다.':
+                        item_info = None
+                        result = False
+                        self.js_click(self.driver_find_xpath('//*[@id="syno-nsc-ext-gen3"]/div[1]/div/div/div[2]/div/span/button', target_name="삭제된 상품 확인 버튼2", depth=depth+1), "삭제된 상품 확인 버튼2", depth=depth+1)
+                        break
+                    kc_button = self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div/button', target_name="KC인증 확인 버튼", depth=depth+1)
+                    if kc_button:
+                        self.js_click(kc_button, "KC인증 확인 버튼", depth=depth+1)
 
                     # 정확한 페이지가 실행되었음을 체크하기위한 title 확인 (url을 통해서 확인할 수 없음)
-                    item_name_element = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[6]/div/div[2]/div[1]/div/div/div/div/div/input')
-                    if item_name_element and item_name_element.get_attribute("value") == item_info['title']:
+                    item_name_element = self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[6]/div/div[2]/div[1]/div/div/div/div/div/input', target_name="제품명 입력", depth=depth+1)
+                    if item_name_element:
+                        naver_depth_print('제품명 입력 버튼 획득('+str(item_name_element.get_attribute("value"))+')', depth=depth+1)
+                        naver_depth_print('정보의 타이틀 값('+str(item_info['title'])+")", depth=depth+1)
+                        # if item_name_element.get_attribute("value") == item_info['title']:
                         page_check = True
+                        break
+                    count = count + 1
                 time.sleep(1)
             else:
                 naver_depth_print(str(item_info['naver_id'])+" 아이템 페이지로 이동", depth=depth+1)
@@ -542,7 +721,7 @@ class Naver:
                     self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div/button'), "KC인증 확인 버튼", depth=depth+1)
                     time.sleep(1)
                     result = True
-                    if not item_info['naver_edit_id'] or item_info['naver_edit_id'] == -1:
+                    if not 'naver_edit_id' in item_info or item_info['naver_edit_id'] == -1:
                         item_info['naver_edit_id'] = self.get_edit_id_from_url()
                 else:
                     item_info = None
@@ -569,6 +748,7 @@ class Naver:
                     naver_depth_print("driver_find_xpath 함수가 "+target_name+"을 "+str(i)+"번째 찾는중", depth=depth+1)
                 else:
                     naver_depth_print("driver_find_xpath 함수가 "+target+"을 "+str(i)+"번째 찾는중", depth=depth+1)
+            element = None
             try:
                 element = self.driver.find_element_by_xpath(target)
                 break
@@ -588,29 +768,48 @@ class Naver:
                 naver_depth_print("driver_find_xpath 함수가 "+target+"을 찾지못함", depth=depth+1)
         return element
 
-    def js_click(self, element, text=None, depth=0):
+    def js_click_with_xpath(self, xpath, target_name=None, depth=0, try_count=-1):
+        naver_depth_print("js_click_with_xpath call", depth=depth+1)
+        result = False
+        count = 0
+        warning = 0
+        while 1:
+            naver_depth_print(str(count+1)+" try", depth=depth+1)
+            element = self.driver_find_xpath(xpath, target_name=target_name, depth=depth+1)
+            if element:
+                self.js_click(element, target_name=target_name, depth=depth+1)
+                return True 
+            count = count + 1
+            if try_count > 0:
+                if count > try_count:
+                    return False
+            #if try_count > 50 and warning == 0:
+                # tts.execute('요소가 검색되지않은지 50회가 지남. 확인 필요.')
+                # warning = 1
+
+    def js_click(self, element, target_name=None, depth=0):
         result = False
         if element:
             self.driver.execute_script("arguments[0].click();", element)
             self.rand_sleep()
             result = True
-        if text:
-            naver_depth_print(text+" 클릭 ("+str(result)+")", depth=depth+1)
+        if target_name:
+            naver_depth_print(target_name+" 클릭 ("+str(result)+")", depth=depth+1)
         return result
         
-    def clear_and_send_element(self, element, input_str, text=None, depth=0):
+    def clear_and_send_element(self, element, input_str, target_name=None, depth=0):
         if element:
-            if text:
-                naver_depth_print(text+" 비우고 내용 '"+input_str+"' 보냄", depth=depth+1)
+            if target_name:
+                naver_depth_print(target_name+" 비우고 내용 '"+input_str+"' 보냄", depth=depth+1)
             element.clear()
             self.rand_sleep()
             element.send_keys(str(input_str))
             self.rand_sleep()
     
-    def send_element(self, element, input_str, text=None, depth=0):
+    def send_element(self, element, input_str, target_name=None, depth=0):
         if element:
-            if text:
-                naver_depth_print(text+" 내용 '"+input_str+"' 보냄", depth=depth+1)
+            if target_name:
+                naver_depth_print(target_name+" 내용 '"+input_str+"' 보냄", depth=depth+1)
             element.send_keys(str(input_str))
             self.rand_sleep()
             

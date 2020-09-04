@@ -91,7 +91,7 @@ def load_naver_data(request, load_count=0):
         naver_item['title'] = title_replace(request.user, naver_item['title'])
         item = ItemData.objects.add_dict_item(naver_item)
 
-        refresh_item(request.user, domeme, naver, item, depth=1)
+        refresh_item(request, domeme, naver, item, depth=1)
         count = count + 1
     return redirect(reverse('store:index'))
 
@@ -159,7 +159,8 @@ def print_from_dict(item_dict, key):
         print(str(key)+" 아이템이 없어서 출력할 수 없음")
 
 def check_tag(request):
-    item_list = ItemData.objects.filter(user=request.user).order_by('-category_score', 'modify_date')
+    item_list = ItemData.objects.filter(user=request.user, category_score__gt=0).order_by('-category_score', 'modify_date')
+    #item_list = [item_list[0]]
     check_category_item_list(request, item_list, depth=1)
     return redirect(reverse('store:index'))
 
@@ -169,6 +170,86 @@ def depth_print(input_str="", depth=0):
         indent += "  "
     print(indent + "[View] " + input_str)
 
+def check_category_item(request, item, depth=0, scout=None, naver=None):
+    item_dict = None
+
+    is_delete = False
+    while ((not item_dict) or (not 'naver_category' in item_dict) or (item_dict['naver_category'] is None)):
+        item_dict = item.get_dict()
+        (naver_result, item_dict) = naver.get_category(item_dict, depth=depth+1, with_save=False)
+        if naver_result == True and not item_dict:
+            depth_print("네이버에서 삭제된 아이템 삭제", depth=depth+1)
+            if item.pk:
+                item.delete()
+            naver.cancel_item_page(depth=depth+1)
+            is_delete = True
+            return (False, item_dict)
+
+    (scout_result, item_dict) = scout.get_category(item_dict, depth=depth+1)
+
+    #print_from_dict(item_dict, 'naver_category')
+    #print_from_dict(item_dict, 'scout_category')
+    
+    min_category_info=[99999,'']
+    category_index = 1
+    category_string_list = []
+    for category in item_dict['scout_category']:
+        weight = 1000
+        score = 0
+
+        # 카테고리 별 점수 책정
+        for index in range(min(len(category), len(item_dict['naver_category']))):
+            if category[index] != item_dict['naver_category'][index]:
+                score = score + weight * category_index
+            weight = weight / 10
+
+        # 최적 카테고리 선택 루틴
+        if min_category_info[0] > score:
+            min_category_info[0] = score
+            min_category_info[1] = ">".join(category)
+            depth_print("카테고리 분석 최저점 달성 "+str(min_category_info), depth=depth+1)
+        else:
+            depth_print("최저점 달성 실패 점수: "+str(score)+" 카테고리 스트링: "+(">".join(category)), depth=depth+1)
+        category_string_list.append(">".join(category))
+
+    # 대분류 비수정으로 선택가능한 카테고리가 없는 경우
+    item_dict['category_current'] = item_dict['naver_category']
+    item_dict['category_list'] = category_string_list
+    if min_category_info[0] < 9999:
+        item_dict['category_score'] = min_category_info[0]
+        item_dict['category_recommand'] = min_category_info[1]
+    else: # 대분류 비수정으로 선택가능한 카테고리가 있을 경우
+        item_dict['category_score'] = 99999
+        if len(item_dict['category_list']) > 0:
+            item_dict['category_recommand'] = item_dict['category_list'][0]
+        else:
+            item_dict['category_recommand'] = ""
+
+    if min_category_info[0] > 0:
+        if min_category_info[0] < 1000:
+            depth_print("소분류 변경 필요", depth=depth+1)
+            naver.set_recommand_category(item_dict, depth=depth+1)
+            item.set_item_info(item_dict)
+        elif min_category_info[0] < 9999:
+            depth_print("대분류 변경 필요", depth=depth+1)
+            naver.save_item_page(depth=depth+1)
+            (result, new_item_dict) = naver.set_main_category(item_dict, depth=depth+1)
+            if result == 1:
+                new_item_dict['category_score'] = 0
+                item.set_item_info(new_item_dict)
+            elif result == -1:
+                print("권한 제한 아이템 삭제")
+                naver.delete_item_with_domeme_id(item_dict, depth=depth+1)
+                item.delete()
+        else:
+            depth_print("카테고리를 획득하지 못한 경우 유저가 검색어를 조정해주어야 함", depth=depth+1)
+            naver.save_item_page(depth=depth+1)
+    else:
+        # 카테고리 변경이 필요없을 때는 naver 페이지를 none으로 만들어두어야 다음 검색에 문제가 안생김
+        naver.save_item_page(depth=depth+1)
+    
+    item.set_item_info(item_dict)
+
 def check_category_item_list(request, item_list, depth=0):
     depth_print("check_category_item_list 콜", depth=depth+1)
     scout = Scout()
@@ -177,50 +258,9 @@ def check_category_item_list(request, item_list, depth=0):
     count = 0
     for item in item_list:
         process_print(count, len(item_list))
-        item_dict = item.get_dict()
-        (naver_result, item_dict) = naver.get_category(item_dict, depth=depth+1, with_save=False)
-        if not item_dict:
-            depth_print("네이버에서 삭제된 아이템 삭제", depth=depth+1)
-            item.delete()
-            naver.cancel_item_page(depth=depth+1)
+        (result, item_dict) = check_category_item(request, item, scout=scout, naver=naver, depth=depth+1)
+        if not result:
             continue
-        (scout_result, item_dict) = scout.get_category(item_dict, depth=depth+1)
-
-        #print_from_dict(item_dict, 'naver_category')
-        #print_from_dict(item_dict, 'scout_category')
-        
-        min_category_info=[99999,'']
-        category_index = 1
-        for category in item_dict['scout_category']:
-            weight = 1000
-            score = 0
-            for index in range(min(len(category), len(item_dict['naver_category']))):
-                if category[index] != item_dict['naver_category'][index]:
-                    score = score + weight * category_index
-                weight = weight / 10
-            if min_category_info[0] > score:
-                min_category_info[0] = score
-                min_category_info[1] = ">".join(category)
-                depth_print("카테고리 분석 최저점 달성 "+str(min_category_info), depth=depth+1)
-            else:
-                depth_print("최저점 달성 실패 점수: "+str(score)+" 카테고리 스트링: "+(">".join(category)), depth=depth+1)
-        
-        item_dict['category_score'] = min_category_info[0]
-        item_dict['category_recommand'] = min_category_info[1]
-        item_dict['category_current'] = item_dict['naver_category']
-
-        if min_category_info[0] > 0:
-            if min_category_info[0] < 1000:
-                depth_print("소분류 변경 필요", depth=depth+1)
-                naver.set_recommand_category(item_dict, depth=1)
-            else:
-                depth_print("대분류 변경 필요", depth=depth+1)
-                naver.save_item_page(depth=depth+1)
-        else:
-            # 카테고리 변경이 필요없을 때는 naver 페이지를 none으로 만들어두어야 다음 검색에 문제가 안생김
-            naver.save_item_page(depth=depth+1)
-        
-        item.set_item_info(item_dict)
         print()
         count = count + 1
         
@@ -257,7 +297,7 @@ def refresh_item_list(request, item_list, depth=0):
     index = 0
     for item in item_list:
         print(str(index+1)+"/"+str(len(item_list))+" "+format(((index+1)/len(item_list)*100), "0.2f")+"%")
-        refresh_item(request.user, domeme, naver, item, depth=depth+1)
+        refresh_item(request, domeme, naver, item, depth=depth+1)
         index = index + 1
 
 def refresh_minimum_count_list(request):
@@ -265,19 +305,21 @@ def refresh_minimum_count_list(request):
     refresh_item_list(request, item_list)
     return redirect(reverse('store:index'))
 
-def refresh_item(user, domeme, naver, item, depth=0):
+def refresh_item(request, domeme, naver, item, depth=0, scout=None):
     domeme_info = domeme.get_item_info(item.domeme_id)
     if domeme_info:
-        naver_info = naver.get_item_info(item.naver_id, depth=depth+1)
+        naver_info = naver.get_item_info(item.get_dict(), depth=depth+1)
 
         if naver_info:
             if item.naver_edit_id == -1 and naver_info['naver_edit_id'] != -1:
-                item.naver_edit_id = naver.get_edit_id({'naver_id':item.naver_id})
+                (result, edit_dict) = naver.get_edit_id({'naver_id':item.naver_id})
+                if 'naver_edit_id' in edit_dict and edit_dict['naver_edit_id'] != -1:
+                    item.naver_edit_id = edit_dict['naver_edit_id']
                 print("네이버 에딧 아이디 업데이트: "+str(item.naver_id)+" => "+str(item.naver_edit_id))
 
             item.update_naver_price_from_info(naver_info)
             item.set_domeme_price(float(domeme_info['domeme_price']), float(domeme_info['domeme_row_price']))
-            item.title = title_replace(user, item.title)
+            item.title = title_replace(request.user, item.title)
 
             item_dict = item.get_dict()
             (naver_price, naver_sale) = naver.set_price(item_dict, goto_page=False, depth=depth+1)
@@ -287,6 +329,8 @@ def refresh_item(user, domeme, naver, item, depth=0):
             else:
                 print("네이버에서 제거됨으로 인한 "+str(item.domeme_id)+" 물건 제거")
                 item.delete()
+
+            check_category_item(request, item, depth=depth+1, naver=naver, scout=scout)
         else:
             print("[Naver] "+str(item.naver_id)+" 네이버에서 제거된 아이템 제거")
             item.delete()
@@ -300,7 +344,7 @@ def refresh_item_view(request, pk):
     domeme = get_domeme(request)
     naver = get_naver(request)
 
-    refresh_item(request.user, domeme, naver, item)
+    refresh_item(request, domeme, naver, item)
 
     return redirect(reverse('store:index'))
 

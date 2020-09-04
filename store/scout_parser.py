@@ -1,5 +1,6 @@
 import time
 import random
+import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -20,6 +21,8 @@ class Scout:
         self.scout_login()
 
     def scout_login(self, depth=0):
+        depth_print("로그인 시도")
+        traceback.print_stack()
         self.driver = webdriver.Chrome(r'C:\Users\한치\mnec\store\chromedriver')
         return True
 
@@ -36,6 +39,7 @@ class Scout:
         self.clear_and_send_element(input_element, item_dict['title'], "검색어 입력창", depth=depth+1)
         search_button_element = self.driver_find_xpath('//*[@id="container"]/div[1]/div[2]/div/span/img', "검색 버튼", try_count=100, depth=depth+1)
         self.js_click(search_button_element, "검색 버튼", depth=depth + 1)
+        self.rand_sleep()
 
         return (True, item_dict)
 
@@ -49,7 +53,7 @@ class Scout:
         # 여러개의 태그 리스트 중에서 최상위 a 태그를 가져옴
         category_load = self.driver_find_xpath('//*[@id="container"]/div[1]/div[3]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]', '카테고리 인기상품', try_count=50, depth=depth+1)
         if category_load:
-            top_div = self.driver_find_xpath('//*[@id="container"]/div[1]/div[3]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div', '최상위 카테고리', depth=depth+1)
+            top_div = self.driver_find_xpath('//*[@id="container"]/div[1]/div[3]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div', '최상위 카테고리', try_count=25, depth=depth+1)
             if top_div:
                 top_elements = top_div.find_elements(By.TAG_NAME, 'a')
                 print("추천 카테고리 갯수: "+str(len(top_elements)))
@@ -328,61 +332,6 @@ class Scout:
     def rand_sleep(self, default=1, rand=1):
         return time.sleep(random.random() * rand + default)
 
-    def set_price(self, item_dict, goto_page=True, depth=0):
-        if item_dict['price_state'] > 0:
-            depth_print("domeme no: "+str(item_dict['domeme_id']), depth=depth+1)
-            depth_print("naver no: "+str(item_dict['naver_id']), depth=depth+1)
-            depth_print("domeme name: "+item_dict['title'], depth=depth+1)
-            depth_print("domeme price: "+str(item_dict['domeme_price']), depth=depth+1)
-            domeme_final_price = item_dict['domeme_price'] * item_dict['minimum_count']
-            depth_print("갯수 포함 도매매 가격:"+str(domeme_final_price), depth=depth+1)
-            no_margin_price = domeme_final_price / ( 1 - 0.03 )
-            depth_print("노마진 가격: "+str(no_margin_price), depth=depth+1)
-            margin_price = domeme_final_price * ( 1.15 + ( random.random() * 0.15 ) )
-            margin_percent = (1 - (domeme_final_price / margin_price))*100
-            depth_print("마진 가격: "+str(margin_price) + " 마진율: "+ str(margin_percent)+"%", depth=depth+1)
-            sale_price = round(margin_price * ( 0.5 * random.random() + 0.05 ), -1)
-            depth_print("세일 추가값: " + str(sale_price), depth=depth+1)
-            naver_price = round(margin_price + sale_price, -1)
-            depth_print("네이버 판매가: "+str(naver_price), depth=depth+1)
-
-        if goto_page:
-            (result, item_dict) = self.goto_item_page(item_dict)
-        else:
-            (result, item_dict) = self.goto_item_page(item_dict, with_search=False)
-
-        if result:
-            self.clear_and_send_element(self.driver_find_name("product.name"), item_dict['title'], "상품명 입력창")
-
-            self.js_click(self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[16]/div[1]/div'), "배송 탭 열기 버튼", depth=depth+1)
-            self.js_click(self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[16]/div[1]/div[2]/div/div[7]/div[2]/div[4]/div/div/div/label[2]/input'),
-                          "배송 선결제 버튼", depth=depth+1)
-
-            if self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[22]/div/div[2]/div/div[2]/div/div[2]/ng-include/div/div[1]/div/div[2]', "스마트스토어전용 상품명 값 입력 태그", depth=depth+1):
-                self.js_click(self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[22]/div/div[2]/div/div[2]/div/div[2]/ng-include/div/div[1]/div/div[1]/div/label/input'), "스마트스토어전용 상품명 미사용", depth=depth+1)
-
-            if item_dict['price_state'] > 0:
-                if naver_price - sale_price < float(item_dict['domeme_row_price']):
-                    self.clear_and_send_element(self.driver_find_name("product.salePrice"), format(float(item_dict['domeme_row_price']), ".0f"), "정상가 입력창", depth=depth+1)
-                    self.js_click(self.driver.find_element_by_id("r3_2_total"), "할인 설정 안함 버튼", depth=depth+1)
-                    result_price = (float(item_dict['domeme_row_price']), 0)
-                else:
-                    self.clear_and_send_element(self.driver_find_name("product.salePrice"), format(naver_price, ".0f"), "정상가 입력창", depth=depth+1)
-                    self.js_click(self.driver.find_element_by_id("r3_1_total"), "할인 설정 버튼", depth=depth+1)
-                    self.clear_and_send_element(self.driver_find_name("product.customerBenefit.immediateDiscountPolicy.discountMethod.value"), format(sale_price, ".0f"), "할인가 입력창", depth=depth+1)
-                    result_price = (naver_price, sale_price)
-            else:
-                result_price = (item_dict['naver_price'], item_dict['naver_sale'])
-                
-            self.js_click(self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div[3]/div[2]/div[1]/button[2]', "저장하기 버튼", depth=depth+1), "저장하기 버튼", depth=depth+1)
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div[1]/button[1]', "상품속성 다음에 할래요 버튼", depth=depth+1, try_count=5), "상품속성 다음에 할래요 버튼", depth=depth+1)
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[2]/div/button[2]', "아이템 리스트 보기 버튼", depth=depth+1, try_count=5), "아이템 리스트 보기 버튼", depth=depth+1)
-            return result_price
-        else:
-            self.cancel_item_page()
-            return (None, None)
-
-
         # try:
         #     item = ItemData.objects.get(domeme_id=naver_info['domeme_id'])
         # except ItemData.DoesNotExist:
@@ -391,18 +340,6 @@ class Scout:
         #     item.save()
         # if item.domeme_price != domeme_price:
         # print("도매 가격이 바뀌었습니다. "+str(item.domeme_price)+" -> "+str(domeme_price))
-    
-    def set_new_title(self, item_info, depth=0):
-        depth_print("set_new_title 호출 ("+str(item_info)+")", depth+1)
-        (result, item_info) = self.goto_item_page(item_info, depth=depth+1)
-        if result and item_info:
-            self.clear_and_send_element(self.driver_find_name("product.name"), item_info['title'], "상품명 입력창", depth=depth+1)
-            self.js_click(self.driver_find_xpath('//*[@id="seller-content"]/ui-view/div[3]/div[2]/div[1]/button[2]', depth=depth+1), "저장하기 버튼")
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[3]/div[1]/button[1]', depth=depth+1), "상품속성 다음에 할래요 버튼")
-            self.js_click(self.driver_find_xpath('/html/body/div[1]/div/div/div[2]/div/button[2]', depth=depth+1), "아이템 리스트 보기 버튼")
-        else:
-            depth_print("페이지 이동 실패로 취소", depth+1)
-        return (result, item_info)
 
     def get_item_info(self, item_info, depth=0):
         self.search_item(item_info)
