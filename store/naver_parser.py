@@ -14,7 +14,7 @@ from selenium.webdriver.common.keys import Keys
 
 class Naver:
     driver = None
-    mixer = None
+    is_mixer_init = False
 
     url_state = -1
     url_edit_id = -1
@@ -35,6 +35,13 @@ class Naver:
 
     def __init__(self):
         self.naver_login()
+
+    def play_sound(self, file_path):
+        if self.is_mixer_init is False:
+            mixer.init()
+            self.is_mixer_init = True
+        mixer.music.load(file_path)
+        mixer.music.play()
 
     def set_url_state(self, state, edit_id=-1):
         url_state = state
@@ -544,6 +551,19 @@ class Naver:
 
             if self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[22]/div/div[2]/div/div[2]/div/div[2]/ng-include/div/div[1]/div/div[2]', "스마트스토어전용 상품명 값 입력 태그", depth=depth+1):
                 self.js_click(self.driver_find_xpath('//*[@id="productForm"]/ng-include/ui-view[22]/div/div[2]/div/div[2]/div/div[2]/ng-include/div/div[1]/div/div[1]/div/label/input'), "스마트스토어전용 상품명 미사용", depth=depth+1)
+            # 상세 페이지 smart editor로 변환하기 수행
+            xpath_list = ['//*[@id="productForm"]/ng-include/ui-view[11]/div/div[2]/div/div/ncp-editor-form/div[4]/div/a',
+                          '/html/body/ui-view[1]/div[3]/div/div[3]/div/ui-view/div[2]/fieldset/form/ng-include/ui-view[11]/div/div[2]/div/div/ncp-editor-form/div[4]/div/a']
+            smart_edit_element = self.driver_find_xpath_list(xpath_list, target_name="smart editor로 변환하기 버튼", depth=depth+1)
+            if smart_edit_element:
+                self.js_click(smart_edit_element)
+                smart_complete_xpath=['/html/body/ui-view[1]/div[3]/div/div[3]/div/ui-view/div[2]/fieldset/form/ng-include/ui-view[11]/div/div[2]/div/div/ncp-editor-form/div[1]/div/p[4]/button',
+                                      '//*[@id="productForm"]/ng-include/ui-view[11]/div/div[2]/div/div/ncp-editor-form/div[1]/div/p[4]/button']
+                while not self.driver_find_xpath_list(smart_complete_xpath, target_name="smart editor로 수정 버튼(변환 완료)", depth=depth+1):
+                    self.play_sound(r'C:\Users\한치\mnec\store\static\error_sound\상세페이지를작성해주세요.mp3')
+                    time.sleep(5)
+            else:
+                item_dict['detail_page'] = 3
 
             if item_dict['price_state'] > 0:
                 if naver_price - sale_price < float(item_dict['domeme_row_price']):
@@ -682,10 +702,7 @@ class Naver:
                 while not page_check:
                     self.driver_get('https://sell.smartstore.naver.com/#/products/edit/'+str(item_info['naver_edit_id']), depth=depth+1, sleep_time=count)
                     if count > 5:
-                        if not self.mixer:
-                            self.mixer = mixer.init()
-                        self.mixer.music.load(r'C:\Users\한치\mnec\store\static\error_sound\아이템페이지획득실패.mp3')
-                        self.mixer.music.play()
+                        self.play_sound(r'C:\Users\한치\mnec\store\static\error_sound\아이템페이지획득실패.mp3')
                     deleted_alert_element = self.driver_find_xpath('/html/body/div[1]/div/div/div[1]/p[2]', '삭제된 아이템 알림창1', depth=depth+1)
                     if deleted_alert_element and deleted_alert_element.text == '삭제된 상품입니다.':
                         item_info = None
@@ -739,6 +756,18 @@ class Naver:
             except NoSuchElementException:
                 element = None
         naver_depth_print("driver_find_name ["+target+"] result: "+str(element), depth=depth+1)
+        return element
+
+    ''' 같은 버튼에 대한 여러개의 path가 존재할 경우에 사용하는 함수
+        상대 경로와 절대 경로에 있는 element를 모두 검색해서 존재하는 경우에만 반환함 '''
+    def driver_find_xpath_list(self, target_list, target_name="", try_count=1, depth=0):
+        element = None
+
+        for t in target_list:
+            element = self.driver_find_xpath(t, target_name=target_name, try_count=try_count, depth=depth+1)
+            if element:
+                break
+
         return element
 
     def driver_find_xpath(self, target, target_name="", try_count=1, depth=0):
