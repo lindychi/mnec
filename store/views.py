@@ -73,6 +73,7 @@ def clear_soldout(request):
 def create_item(request):
     return redirect(reverse('store:index'))
 
+''' 네이버에는 등록되었으나, 서버 디비에는 등록되지 않은 데이터를 가져온다. '''
 def load_naver_data(request, load_count=0):
     item_list = ItemData.objects.filter(user=request.user)
     except_list = []
@@ -117,7 +118,7 @@ def load_domeme_data(request):
             #     else:
             #         print("네이버 에딧 아이디 업데이트: "+str(item.naver_id)+" => "+str(item.naver_edit_id))
             if item.price_state > 0:
-                item_dict = item.get_dict()
+                item_dict = vars(item)
                 (naver_price, naver_sale) = naver.set_price(item_dict, goto_page=True, depth=1)
                 if naver_price and naver_sale:
                     print("변경된 네이버 가격: "+str(naver_price)+" - "+str(naver_sale))
@@ -175,7 +176,7 @@ def check_category_item(request, item, depth=0, scout=None, naver=None):
 
     is_delete = False
     while ((not item_dict) or (not 'naver_category' in item_dict) or (item_dict['naver_category'] is None)):
-        item_dict = item.get_dict()
+        item_dict = vars(item)
         (naver_result, item_dict) = naver.get_category(item_dict, depth=depth+1, with_save=False)
         if naver_result == True and not item_dict:
             depth_print("네이버에서 삭제된 아이템 삭제", depth=depth+1)
@@ -307,36 +308,37 @@ def refresh_minimum_count_list(request):
 
 def refresh_item(request, domeme, naver, item, depth=0, scout=None):
     domeme_info = domeme.get_item_info(item.domeme_id)
-    if domeme_info:
-        naver_info = naver.get_item_info(item.get_dict(), depth=depth+1)
-
-        if naver_info:
-            if item.naver_edit_id == -1 and naver_info['naver_edit_id'] != -1:
-                (result, edit_dict) = naver.get_edit_id({'naver_id':item.naver_id})
-                if 'naver_edit_id' in edit_dict and edit_dict['naver_edit_id'] != -1:
-                    item.naver_edit_id = edit_dict['naver_edit_id']
-                print("네이버 에딧 아이디 업데이트: "+str(item.naver_id)+" => "+str(item.naver_edit_id))
-
-            item.update_naver_price_from_info(naver_info)
-            item.set_domeme_price(float(domeme_info['domeme_price']), float(domeme_info['domeme_row_price']))
-            item.title = title_replace(request.user, item.title)
-
-            item_dict = item.get_dict()
-            (naver_price, naver_sale) = naver.set_price(item_dict, goto_page=False, depth=depth+1)
-            if naver_price and naver_sale:
-                print("변경된 네이버 가격: "+str(naver_price)+" - "+str(naver_sale))
-                item.update_naver_price(naver_price, naver_sale)
-            else:
-                print("네이버에서 제거됨으로 인한 "+str(item.domeme_id)+" 물건 제거")
-                item.delete()
-
-            check_category_item(request, item, depth=depth+1, naver=naver, scout=scout)
-        else:
-            print("[Naver] "+str(item.naver_id)+" 네이버에서 제거된 아이템 제거")
-            item.delete()
-    else:
+    if not domeme_info:
         print("[Domeme] "+str(item.domeme_id)+" 도매매에서 삭제된 페이지 제거")
-        item.delete()    
+        item.delete()
+        return (False, None)
+    
+    naver_info = naver.get_item_info(vars(item), depth=depth+1)
+    if not naver_info:
+        print("[Naver] "+str(item.naver_id)+" 네이버에서 제거된 아이템 제거")
+        item.delete()
+        return (False, None)
+
+    if item.naver_edit_id == -1 and naver_info['naver_edit_id'] != -1:
+        (result, edit_dict) = naver.get_edit_id({'naver_id':item.naver_id})
+        if 'naver_edit_id' in edit_dict and edit_dict['naver_edit_id'] != -1:
+            item.naver_edit_id = edit_dict['naver_edit_id']
+        print("네이버 에딧 아이디 업데이트: "+str(item.naver_id)+" => "+str(item.naver_edit_id))
+
+    item.update_naver_price_from_info(naver_info)
+    item.set_domeme_price(float(domeme_info['domeme_price']), float(domeme_info['domeme_row_price']))
+    item.title = title_replace(request.user, item.title)
+
+    item_dict = vars(item)
+    (naver_price, naver_sale) = naver.set_price(item_dict, goto_page=False, depth=depth+1)
+    if naver_price and naver_sale:
+        print("변경된 네이버 가격: "+str(naver_price)+" - "+str(naver_sale))
+        item.update_naver_price(naver_price, naver_sale)
+    else:
+        print("네이버에서 제거됨으로 인한 "+str(item.domeme_id)+" 물건 제거")
+        item.delete()
+
+    check_category_item(request, item, depth=depth+1, naver=naver, scout=scout)
 
 def refresh_item_view(request, pk):
     item = ItemData.objects.get(user=request.user, pk=pk)
@@ -397,7 +399,7 @@ def title_replace_with_list(request, item_list):
         if not item.title == temp_title:
             print("상품명 치환 '"+item.title+"'->'"+temp_title+"'")
             item.title = temp_title
-            (result, item_info) = naver.set_new_title(item.get_dict(), depth=1)
+            (result, item_info) = naver.set_new_title(vars(item), depth=1)
             item.set_item_info(item_info)
         count = count + 1
 
