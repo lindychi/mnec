@@ -37,8 +37,10 @@ def get_index_dict(request, item_list):
     unset_sale_count = ItemData.objects.filter(user=request.user, naver_sale=0, domeme_row_price=-1).count()
     uncorrect_upper_margin = ItemData.objects.filter(user=request.user, margin_ratio__gt=25).order_by('-margin_ratio')
     unset_naver_edit_id = ItemData.objects.filter(user=request.user, naver_edit_id=-1)
+    no_detail_page_count = ItemData.objects.filter(user=request.user, detail_page=-1).count()
     soldout_list = []
-    return {'soldout_list':soldout_list, 'unset_sale_count':unset_sale_count, 'uncorrect_upper_margin':uncorrect_upper_margin, 'unset_naver_edit_id':unset_naver_edit_id, 'item_list':item_list}
+    return {'soldout_list':soldout_list, 'unset_sale_count':unset_sale_count, 'uncorrect_upper_margin':uncorrect_upper_margin, 'unset_naver_edit_id':unset_naver_edit_id, 'item_list':item_list,
+            'no_detail_page_count':no_detail_page_count}
 
 def index_view(request):
     item_list = ItemData.objects.filter(user=request.user).order_by('margin_ratio')
@@ -82,6 +84,7 @@ def load_naver_data(request, load_count=0):
 
     domeme = get_domeme(request)
     naver = get_naver(request)
+    scout = Scout()
     naver_item_list = naver.get_sale_unset_item_list(except_list, depth=1, load_count=load_count)
     count = 0
     for naver_item in naver_item_list:
@@ -92,7 +95,7 @@ def load_naver_data(request, load_count=0):
         naver_item['title'] = title_replace(request.user, naver_item['title'])
         item = ItemData.objects.add_dict_item(naver_item)
 
-        refresh_item(request, domeme, naver, item, depth=1)
+        refresh_item(request, domeme, naver, item, depth=1, scout=scout)
         count = count + 1
     return redirect(reverse('store:index'))
 
@@ -267,6 +270,11 @@ def check_category_item_list(request, item_list, depth=0):
         
     return redirect(reverse('store:index'))
         
+def refresh_no_detail_page(request):
+    item_list = ItemData.objects.filter(user=request.user, detail_page=-1).order_by('modify_date')
+    refresh_item_list(request, item_list)
+    return redirect(reverse('store:index'))
+
 def refresh_oldest(request):
     item_list = ItemData.objects.filter(user=request.user).order_by('modify_date')
     refresh_item_list(request, item_list)
@@ -295,10 +303,11 @@ def refresh_unset_naver_sale_price(request):
 def refresh_item_list(request, item_list, depth=0):
     naver = get_naver(request)
     domeme = get_domeme(request)
+    scout = Scout()
     index = 0
     for item in item_list:
         print(str(index+1)+"/"+str(len(item_list))+" "+format(((index+1)/len(item_list)*100), "0.2f")+"%")
-        refresh_item(request, domeme, naver, item, depth=depth+1)
+        refresh_item(request, domeme, naver, item, depth=depth+1, scout=scout)
         index = index + 1
 
 def refresh_minimum_count_list(request):
@@ -345,8 +354,9 @@ def refresh_item_view(request, pk):
 
     domeme = get_domeme(request)
     naver = get_naver(request)
+    scout = Scout()
 
-    refresh_item(request, domeme, naver, item)
+    refresh_item(request, domeme, naver, item, scout)
 
     return redirect(reverse('store:index'))
 

@@ -26,4 +26,5 @@ urlpatterns = [
     path('title_replace_with_search/', views.title_replace_with_search, name='title_replace_with_search'),
     path('check_tag/', views.check_tag, name='check_tag'),
     path('reset_category_score/', views.reset_category_score, name='reset_category_score'),
+    path('refresh_no_detail_page/', views.refresh_no_detail_page, name='refresh_no_detail_page'),
 ]
