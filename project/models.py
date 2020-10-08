@@ -22,6 +22,7 @@ class ProjectTodo(models.Model):
     parent = models.ForeignKey('self', null=True, blank=True, related_name='child', on_delete=models.SET_NULL)
     is_clear = models.BooleanField(default=False)
     clear_date = models.DateTimeField(default=None, null=True)
+    priority = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.id) + " " + self.title + " (" + str(self.depth) + ")"

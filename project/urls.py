@@ -12,4 +12,5 @@ urlpatterns = [
     path('delete_projecttodo/<int:todo_id>/', views.delete_project_todo, name='delete_projecttodo'),
     path('edit_projecttodo/<int:pk>/', views.EditProjectTodoView.as_view(), name='edit_projecttodo'),
     path('clear_projecttodo/<int:todo_id>/', views.clear_project_todo, name='clear_projecttodo'),
+    path('add_priority_projecttodo/<int:todo_id>/<value>/', views.add_priority_projecttodo, name='add_priority_projecttodo'),
 ]

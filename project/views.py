@@ -94,3 +94,9 @@ def clear_project_todo(request, todo_id):
         todo.clear_date = timezone.now()
     todo.save()
     return HttpResponseRedirect(reverse('project:detail_project', args=[todo.project.id]))
+
+def add_priority_projecttodo(request, todo_id, value):
+    todo = ProjectTodo.objects.get(id=todo_id)
+    todo.priority = todo.priority + int(value)
+    todo.save()
+    return HttpResponseRedirect(reverse('project:detail_project', args=[todo.project.id]))

@@ -16,5 +16,5 @@ def indent(depth):
 
 @register.inclusion_tag('project/child.html')
 def show_childs(todo):
-    childs = todo.child.all()
+    childs = todo.child.order_by('-priority')
     return {'childs':childs}
