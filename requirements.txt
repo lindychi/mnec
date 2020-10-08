@@ -13,4 +13,3 @@ pytz==2017.2
 six==1.11.0
 sorl-thumbnail==12.4.1
 virtualenv==15.1.0
-wiki==0.2.4
