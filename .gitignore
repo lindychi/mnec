@@ -103,3 +103,4 @@ ENV/
 menv
 db.sqlite3
 .idea
+*/migrations
